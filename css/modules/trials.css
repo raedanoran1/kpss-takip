@@ -1,0 +1,167 @@
+/* --- TRIAL (DENEME) STYLES --- */
+.trial-calculator {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.trial-type-toggle {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.toggle-btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.toggle-btn.active {
+    background: #4caf50;
+    color: white;
+    border-color: #388e3c;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.calc-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.calc-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.calc-row.header {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.calc-row input {
+    width: 100%;
+    padding: 0.4rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-weight: 600;
+}
+
+.calc-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.score-display {
+    display: flex;
+    flex-direction: column;
+}
+
+.score-display .label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.score-display .value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.calc-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.trial-history-container h3 {
+    margin: 1.5rem 0 1rem;
+    font-size: 1.1rem;
+}
+
+.trial-history-item {
+    display: grid;
+    /* 5 subjects (1fr each), Net (45px), Puan (45px), Tarih (110px), Delete (24px) */
+    grid-template-columns: repeat(5, 1fr) 45px 45px 110px 24px;
+    align-items: center;
+    gap: 4px;
+    padding: 0.6rem 0.4rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.trial-history-item.header {
+    font-weight: 700;
+    background: var(--bg-color);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: var(--text-secondary);
+}
+
+.trial-history-item.row {
+    background: var(--surface-color);
+}
+
+.trial-history-item.row:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.trial-history-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trial-history-item .date {
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: 0.7rem;
+}
+
+.trial-history-item .total-net {
+    font-weight: 700;
+    color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 4px;
+    padding: 2px 0;
+}
+
+.trial-history-item .score {
+    font-weight: 800;
+    color: var(--secondary-color);
+}
+
+.delete-trial-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.6;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.delete-trial-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
