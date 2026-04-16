@@ -49,6 +49,13 @@ web_resources/          # Ses dosyaları (Cevşen MP3'leri)
 - SQLite veritabanı (sql.js) → IndexedDB'de saklanıyor
 - Resimler, ses kayıtları → IndexedDB'de saklanıyor
 - Uygulama durumu → IndexedDB'de saklanıyor
+- PDF dosyaları → ArrayBuffer olarak IndexedDB'de saklanıyor (iOS/iPad uyumlu)
+
+### PDF Yükleme (iPad/iOS Düzeltmeleri)
+- `FileReader.readAsArrayBuffer` kullanılıyor (readAsDataURL yerine) → %33 daha küçük, iOS'ta daha stabil
+- Dosya seçici: `accept=".pdf,application/pdf"` (iOS Safari uyumlu)
+- IDB hata yakalama: null hata durumları düzgün işleniyor
+- FileReader onerror handler eklendi (sessiz başarısızlıklar engellendi)
 
 ## Çalıştırma
 ```bash
