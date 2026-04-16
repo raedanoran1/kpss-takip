@@ -1,0 +1,189 @@
+/* Habits Tab Styles */
+.habits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 1rem;
+}
+
+.habit-item {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.habit-item.completed {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-color: #059669;
+    color: white;
+}
+
+.habit-item.completed .habit-name,
+.habit-item.completed .habit-count,
+.habit-item.completed .habit-target,
+.habit-item.completed .habit-separator {
+    color: white;
+}
+
+.habit-order-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.habit-order-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.habit-order-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.habit-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-right: 40px; /* X butonu için yer bırak */
+    min-width: 0; /* Text overflow için */
+}
+
+.habit-name {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.habit-counter-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    margin-right: 0.5rem; /* X butonu ile arasında boşluk */
+}
+
+.habit-counter-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    border: 2px solid var(--primary-color);
+    background: transparent;
+    color: var(--primary-color);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+    position: relative;
+    padding: 0;
+}
+
+.counter-display {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+    color: var(--primary-color);
+}
+
+.counter-icon {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.habit-counter-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.habit-counter-btn:hover:not(:disabled) .counter-display,
+.habit-counter-btn:hover:not(:disabled) .counter-icon {
+    color: white;
+}
+
+.habit-counter-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.habit-item.completed .habit-counter-btn {
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+}
+
+.habit-item.completed .habit-counter-btn .counter-display {
+    color: white;
+}
+
+.habit-item.completed .habit-counter-btn .counter-icon {
+    color: white;
+}
+
+.habit-delete-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--error-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    z-index: 20;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.habit-delete-btn:hover {
+    background: var(--error-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.habit-item.completed .habit-delete-btn {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.habit-item.completed .habit-delete-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
