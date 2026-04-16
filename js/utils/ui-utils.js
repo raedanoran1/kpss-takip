@@ -65,18 +65,20 @@ export function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    // Simple icon mapping
-    const icon = type === 'success' ? '✅' : '⚠️';
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️';
 
     toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    toast.style.maxWidth = '90vw';
+    toast.style.whiteSpace = 'normal';
+    toast.style.wordBreak = 'break-word';
 
     container.appendChild(toast);
 
-    // Auto remove logic handled by CSS animation usually, 
-    // but good to remove from DOM to keep it clean.
+    // Hata mesajları daha uzun süre görünsün
+    const duration = type === 'error' ? 6000 : type === 'warning' ? 4500 : 3000;
     setTimeout(() => {
         toast.remove();
-    }, 3000);
+    }, duration);
 }
 
 export function toggleClass(elementId, className, force) {
