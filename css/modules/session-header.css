@@ -1,0 +1,263 @@
+/* === REDESIGNED SESSION HEADER (Now sits below global header) === */
+.session-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    /* Below global header (10005) */
+}
+
+/* Close Button - Top Right */
+.session-close-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+/* Drawing Canvas Top Layer */
+#drawing-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    background: transparent;
+}
+
+.session-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Centered Topic Info & Controls */
+.session-topic-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* Top align */
+    gap: 0.5rem;
+    /* Reduced gap */
+    margin-top: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.session-topic-info h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+    line-height: 1.2;
+}
+
+/* Controls Row (Timer + Q Tracker) */
+.session-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    /* Reduced gap */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.35rem 0.5rem;
+    /* Compact padding */
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    width: 95%;
+    max-width: 600px;
+}
+
+.timer-display {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.2rem 0.8rem;
+    border-radius: 8px;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.timer-control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: auto;
+    /* Auto width for text */
+    height: auto;
+    padding: 0.3rem 1rem;
+    border-radius: 8px;
+    /* Matching the Stop button style */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.timer-control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.timer-control-btn.stop {
+    background: rgba(239, 68, 68, 0.4);
+    border-color: rgba(239, 68, 68, 0.6);
+    width: auto;
+    height: auto;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.timer-control-btn.stop:hover {
+    background: rgba(239, 68, 68, 0.6);
+}
+
+/* Header Q Tracker */
+.header-q-tracker {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.2rem 0.4rem;
+    border-radius: 50px;
+    margin-left: 0.5rem;
+    /* Small gap from timer */
+}
+
+.header-q-tracker input {
+    width: 60px;
+    /* Compact */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.15rem 0.4rem;
+    color: white;
+    font-size: 0.85rem;
+    outline: none;
+    text-align: center;
+}
+
+.header-q-tracker input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.header-q-tracker button {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary-color);
+    border: none;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.header-q-tracker button:hover {
+    background: white;
+    transform: translateY(-1px);
+}
+
+.header-q-total {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    min-width: 40px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Session Body - Expand and remove gap */
+.session-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-color);
+    /* Same as chat */
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+}
+
+/* Chat Container - No white gap */
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg-color);
+    /* Ensure background fills */
+    padding: 0.5rem;
+}
+
+.chat-input-area {
+    padding: 0.5rem 1rem;
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    position: relative;
+    z-index: 10002;
+    /* Ensure input stays clickable */
+}
+
+/* Review Headers also below global */
+.review-header {
+    z-index: 1000 !important;
+    position: relative;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.3rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.review-header .review-progress {
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-top: 0;
+    color: white !important;
+    /* Ensure visibility on gradient */
+}
+
+.global-header {
+    z-index: 10005 !important;
+    position: relative;
+}
