@@ -69,9 +69,9 @@ export function setupResourcesUI() {
                 } else {
                     const errType = saveResourcePDF._lastError || '';
                     if (errType === 'quota') {
-                        showToast('PDF kaydedilemedi: Depolama alanı dolu', 'error');
+                        showToast('PDF kaydedilemedi: Depolama alanı dolu. Küçük bir PDF deneyin.', 'error');
                     } else {
-                        showToast(`PDF kaydedilemedi (${errType || 'bilinmeyen hata'})`, 'error');
+                        showToast(`PDF kaydedilemedi: ${errType || 'bilinmeyen hata'}`, 'error');
                     }
                 }
 
@@ -81,7 +81,15 @@ export function setupResourcesUI() {
                 loadQuestionsDashboard();
                 loadTopics(appState.currentSubject);
             };
-            reader.readAsDataURL(pdfFile);
+            reader.onerror = () => {
+                pdfInput.value = '';
+                pdfLabel.textContent = 'PDF Dosyası Seç (Opsiyonel)';
+                pdfLabel.style.color = 'var(--text-secondary)';
+                modal.classList.remove('active');
+                showToast('PDF okunamadı: Dosya erişim hatası', 'error');
+                loadResources();
+            };
+            reader.readAsArrayBuffer(pdfFile);
         } else {
             modal.classList.remove('active');
             showToast('Kaynak eklendi');
@@ -149,7 +157,7 @@ function createUpdateModal() {
             <div class="input-group">
                 <label>PDF Güncelle (Opsiyonel)</label>
                 <div class="file-input-wrapper">
-                    <input type="file" id="update-res-pdf-input" accept="application/pdf" hidden>
+                    <input type="file" id="update-res-pdf-input" accept=".pdf,application/pdf" hidden>
                     <label for="update-res-pdf-input" id="update-res-pdf-label" class="file-input-label">
                         📄 Yeni PDF Seç (Değiştir)
                     </label>
@@ -287,17 +295,29 @@ function openUpdateModal(resource) {
             if (pdfFile) {
                 const reader = new FileReader();
                 reader.onload = async (e) => {
-                    await saveResourcePDF(resource.id, e.target.result);
+                    const success = await saveResourcePDF(resource.id, e.target.result);
                     modal.classList.remove('active');
-                    showToast('Kaynak ve PDF güncellendi');
+                    if (success) {
+                        showToast('Kaynak ve PDF güncellendi');
+                    } else {
+                        const errType = saveResourcePDF._lastError || '';
+                        if (errType === 'quota') {
+                            showToast('PDF kaydedilemedi: Depolama alanı dolu. Küçük bir PDF deneyin.', 'error');
+                        } else {
+                            showToast(`PDF kaydedilemedi: ${errType || 'bilinmeyen hata'}`, 'error');
+                        }
+                    }
                     loadResources();
                     // Refresh other tabs
-                    loadNotesDashboard();
                     loadNotesDashboard();
                     loadQuestionsDashboard();
                     loadTopics(appState.currentSubject);
                 };
-                reader.readAsDataURL(pdfFile);
+                reader.onerror = () => {
+                    modal.classList.remove('active');
+                    showToast('PDF okunamadı: Dosya erişim hatası', 'error');
+                };
+                reader.readAsArrayBuffer(pdfFile);
             } else {
                 modal.classList.remove('active');
                 showToast('Kaynak güncellendi');
