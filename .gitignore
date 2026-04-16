@@ -1,0 +1,9 @@
+
+.git.backup.*
+node_modules/
+www/
+.cache/
+.local/
+_metadata/
+attached_assets/
+package-lock.json
