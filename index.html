@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KPSS Takip">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>KPSS Çalışma Ortamı</title>
+    <link rel="manifest" href="pwa-manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon128.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/modules/voice-library.css">
+    <link rel="stylesheet" href="css/modules/knowledge-base.css">
+    <link rel="stylesheet" href="css/modules/pdf-viewer.css">
+    <link rel="stylesheet" href="css/modules/cevsen.css">
+    <link rel="stylesheet" href="css/modules/yasin.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <section id="daily-focus-panel" class="daily-focus-panel">
+            <div class="daily-focus-header">
+                <div class="daily-focus-headline">
+                    <span id="daily-focus-total" class="daily-focus-total">Bugun toplam calisma suresi: 00:00:00</span>
+                    <span id="daily-focus-target" class="daily-focus-target">Hedef sure: 00:00:00</span>
+                </div>
+            </div>
+            <div id="daily-focus-buttons" class="daily-focus-buttons"></div>
+            <div class="daily-focus-tools">
+                <div class="global-drawing-toolbar" id="global-drawing-toolbar">
+                    <button id="global-drawing-toggle" class="drawing-toggle-btn" title="Çizim Aç/Kapat">
+                        <span class="toggle-icon">✏️</span>
+                        <span class="toggle-text">Çizim Kapalı</span>
+                    </button>
+                    <div class="drawing-tools-group">
+                        <button id="global-hand-btn" class="tool-btn-mini" title="Kaydır (El Aracı)">🖐️</button>
+                        <button id="global-pen-btn" class="tool-btn-mini active" title="Kalem">✏️</button>
+                        <button id="global-eraser-btn" class="tool-btn-mini" title="Silgi">🧹</button>
+                        <div class="color-palette-mini">
+                            <div class="color-dot-mini active" id="global-color-dot" style="background-color: #ff0000;" data-color="#ff0000"></div>
+                            <button class="color-btn-mini picker-trigger" id="global-color-picker-btn" title="Renk Seç">🎨</button>
+                            <input type="color" id="global-color-picker" style="display: none;" value="#ff0000">
+                        </div>
+                        <div class="size-control-mini">
+                            <input type="range" id="global-pen-size" class="pen-slider-mini" min="1" max="20" value="2" title="Kalem Kalınlığı">
+                            <span id="global-pen-size-display" class="size-display-mini">2px</span>
+                        </div>
+                        <div class="size-control-mini">
+                            <input type="range" id="global-eraser-size" class="pen-slider-mini" min="10" max="50" value="20" title="Silgi Kalınlığı">
+                            <span id="global-eraser-size-display" class="size-display-mini">20px</span>
+                        </div>
+                        <button id="global-clear-btn" class="tool-btn-mini" title="Temizle">🗑️</button>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <select id="exam-type-select" class="modern-input exam-type-select">
+                        <option value="lisans">Lisans</option>
+                        <option value="onlisans">Önlisans</option>
+                    </select>
+                    <div class="countdown-timer" id="countdown-timer">
+                        <div class="countdown-item">
+                            <div class="countdown-circle">
+                                <svg class="countdown-svg" viewBox="0 0 100 100">
+                                    <circle class="countdown-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="countdown-progress" id="days-progress" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div class="countdown-value" id="days-value">0</div>
+                            </div>
+                            <div class="countdown-label">GÜN</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-circle">
+                                <svg class="countdown-svg" viewBox="0 0 100 100">
+                                    <circle class="countdown-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="countdown-progress" id="hours-progress" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div class="countdown-value" id="hours-value">0</div>
+                            </div>
+                            <div class="countdown-label">SAAT</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-circle">
+                                <svg class="countdown-svg" viewBox="0 0 100 100">
+                                    <circle class="countdown-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="countdown-progress" id="minutes-progress" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div class="countdown-value" id="minutes-value">0</div>
+                            </div>
+                            <div class="countdown-label">DAKİKA</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-circle">
+                                <svg class="countdown-svg" viewBox="0 0 100 100">
+                                    <circle class="countdown-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="countdown-progress" id="seconds-progress" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div class="countdown-value" id="seconds-value">0</div>
+                            </div>
+                            <div class="countdown-label">SANİYE</div>
+                        </div>
+                    </div>
+                    <button class="icon-btn" id="theme-toggle">🌙</button>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="daily-focus-enabled">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="daily-progress-bar-wrap" id="daily-progress-bar-wrap"></div>
+            <div id="daily-focus-breakdown" class="daily-focus-breakdown"></div>
+        </section>
+        <!-- PERSISTENT MAIN NAVIGATION -->
+        <nav class="main-nav">
+            <button class="nav-btn active" data-tab="today-tab">
+                <span class="icon">🔥</span>
+                <span>Bugün</span>
+            </button>
+            <button class="nav-btn" data-tab="resources-tab">
+                <span class="icon">🗂️</span>
+                <span>Kaynaklar</span>
+            </button>
+            <button class="nav-btn" data-tab="questions-tab">
+                <span class="icon">❓</span>
+                <span>Sorular</span>
+            </button>
+            <button class="nav-btn" data-tab="study-stats-tab">
+                <span class="icon">📊</span>
+                <span>Çalışma İstatistiği</span>
+            </button>
+            <button class="nav-btn" data-tab="trials-tab">
+                <span class="icon">📈</span>
+                <span>Deneme</span>
+            </button>
+            <button class="nav-btn" data-tab="subjects-tab">
+                <span class="icon">📚</span>
+                <span>Konular</span>
+            </button>
+            <button class="nav-btn" data-tab="notes-tab">
+                <span class="icon">📝</span>
+                <span>Notlar</span>
+            </button>
+            <button class="nav-btn" data-tab="voice-library-tab">
+                <span class="icon">🎧</span>
+                <span>Kütüphane</span>
+            </button>
+            <button class="nav-btn" data-tab="backup-tab">
+                <span class="icon">💾</span>
+                <span>Yedek</span>
+            </button>
+            <button class="nav-btn" data-tab="habits-tab">
+                <span class="icon">✅</span>
+                <span>Alışkanlıklar</span>
+            </button>
+            <button class="nav-btn" data-tab="speed-reading-tab">
+                <span class="icon">⚡</span>
+                <span>Hızlı Okuma</span>
+            </button>
+        </nav>
+
+        <!-- PERSISTENT SUBJECT TABS -->
+        <div class="sub-nav-scroll" id="subject-sub-nav">
+            <div class="sub-nav">
+                <span class="chip active" data-subject="matematik">Matematik</span>
+                <span class="chip" data-subject="turkce">Türkçe</span>
+                <span class="chip" data-subject="tarih">Tarih</span>
+                <span class="chip" data-subject="cografya">Coğrafya</span>
+                <span class="chip" data-subject="anayasa">Anayasa</span>
+            </div>
+        </div>
+
+        <!-- HABITS SUB TABS -->
+        <div class="sub-nav-scroll hidden" id="habits-sub-nav">
+            <div class="sub-nav">
+                <span class="chip active" data-habits-sub="habits">Alışkanlıklar</span>
+                <span class="chip" data-habits-sub="cevsen">Cevşen</span>
+                <span class="chip" data-habits-sub="yasin">Yasin</span>
+            </div>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <main class="content-area">
+            <!-- 1. TODAY TAB -->
+            <div id="today-tab" class="tab-content active">
+                <div class="list-header">
+                    <h3>Bugünkü Çalışma Planı</h3>
+                    <button class="small-btn" id="today-clear-btn">Temizle</button>
+                </div>
+
+                <ul class="today-work-list" id="today-work-list">
+                    <!-- Dynamic -->
+                </ul>
+
+                <div id="today-empty-state" class="empty-state hidden">
+                    <p>Bugün için henüz plan yapmadın.</p>
+                    <p class="sub-text">Konular sekmesinden çalışacağın konuları ekle.</p>
+                </div>
+            </div>
+
+            <!-- 2. SUBJECTS TAB -->
+            <div id="subjects-tab" class="tab-content">
+                <div class="progress-card">
+                    <div class="progress-info">
+                        <span class="subject-title" id="current-subject-title">Matematik</span>
+                        <span class="progress-percentage" id="current-progress-text">%0</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="current-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="global-stats-bar">
+                        <div class="stat-item">
+                            <span class="stat-icon">⏱️</span>
+                            <span id="global-total-duration">0 sa 0 dk</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">✍️</span>
+                            <span id="global-total-questions">0 soru</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-header">
+                    <h3>Konu Listesi</h3>
+                    <button class="small-btn" id="add-topic-btn">+ Ekle</button>
+                </div>
+
+                <ul class="topic-list" id="topic-list">
+                    <!-- Dynamic Topics -->
+                </ul>
+            </div>
+
+            <!-- 3. NOTES TAB -->
+            <div id="notes-tab" class="tab-content">
+                <!-- Dashboard Mode -->
+                <div id="notes-dashboard">
+                    <div class="questions-header">
+                        <h3>Notlarım ve Tekrar</h3>
+                        <button class="primary-btn full-width" id="start-all-notes-review-btn" disabled>🧠 Karışık Not
+                            Tekrarı</button>
+                    </div>
+                    <div id="topic-notes-list" class="topic-list">
+                        <!-- Dynamic list of topics with note counts -->
+                    </div>
+                    <div id="notes-empty-state" class="empty-state hidden">
+                        <p>Henüz hiç not eklemedin.</p>
+                        <p class="sub-text">Çalışma yaparken önemli yerleri not alabilirsin.</p>
+                    </div>
+                </div>
+
+                <!-- Review Mode (Hidden by default) -->
+                <div id="notes-review-interface" class="hidden">
+                    <div class="review-header">
+                        <!-- Close Button (Top Right) -->
+                        <button class="session-close-btn" id="exit-notes-review-btn">✕</button>
+
+                        <span class="review-progress"><span id="note-review-current">1</span> / <span
+                                id="note-review-total">10</span></span>
+
+                    </div>
+
+                    <div class="flashcard" id="note-review-card">
+                        <button class="nav-arrow left" id="note-nav-prev" title="Önceki Not">❮</button>
+                        <button class="delete-q-btn" id="delete-current-note-btn" title="Notu Sil">🗑️</button>
+                        <div id="note-card-content" class="note-content-area">
+                            <!-- Image or Text injected here -->
+                        </div>
+                        <button class="nav-arrow right" id="note-nav-next" title="Sonraki Not">❯</button>
+                    </div>
+
+                    <div class="rating-buttons">
+                        <button class="rate-btn again" data-rating="1">
+                            <span class="label">Tekrar</span>
+                            <span class="time">&lt; 1 dk</span>
+                        </button>
+                        <button class="rate-btn hard" data-rating="2">
+                            <span class="label">Zor</span>
+                            <span class="time">2 gün</span>
+                        </button>
+                        <button class="rate-btn good" data-rating="3">
+                            <span class="label">İyi</span>
+                            <span class="time">4 gün</span>
+                        </button>
+                        <button class="rate-btn easy" data-rating="4">
+                            <span class="label">Kolay</span>
+                            <span class="time">7 gün</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. QUESTIONS TAB -->
+            <div id="questions-tab" class="tab-content">
+                <div id="questions-dashboard">
+                    <div class="questions-header">
+                        <div style="display:flex; gap:10px;">
+                            <button class="primary-btn outline full-width" id="open-add-question-btn">📸 Soru
+                                Ekle</button>
+                        </div>
+                        <button class="primary-btn full-width" id="start-all-review-btn" style="margin-top:10px"
+                            disabled>🧠 Karışık Tekrar</button>
+                    </div>
+
+                    <div id="topic-questions-list" class="topic-list">
+                        <!-- Dynamic -->
+                    </div>
+
+                    <div id="questions-empty-state" class="empty-state hidden">
+                        <p>Soru Bankası Boş</p>
+                        <p class="sub-text">Yapamadığın soruları buraya ekle.</p>
+                    </div>
+                </div>
+
+                <!-- Review Interface -->
+                <div id="review-interface" class="hidden">
+                    <div class="review-header">
+                        <!-- Close Button (Top Right) -->
+                        <button class="session-close-btn" id="exit-review-btn">✕</button>
+
+                        <span class="review-progress"><span id="review-current">1</span> / <span
+                                id="review-total">20</span></span>
+
+                    </div>
+
+                    <div class="flashcard">
+                        <button class="delete-q-btn" id="delete-current-q-btn" title="Soruyu Sil">🗑️</button>
+                        <button class="nav-arrow left" id="q-nav-prev" title="Önceki Soru">❮</button>
+                        <img id="review-image" src="" alt="Soru">
+                        <button class="nav-arrow right" id="q-nav-next" title="Sonraki Soru">❯</button>
+                    </div>
+
+                    <div class="rating-buttons">
+                        <button class="rate-btn again" data-rating="1">
+                            <span class="label">Tekrar</span>
+                            <span class="time">&lt; 10 dk</span>
+                        </button>
+                        <button class="rate-btn hard" data-rating="2">
+                            <span class="label">Zor</span>
+                            <span class="time">1 gün</span>
+                        </button>
+                        <button class="rate-btn good" data-rating="3">
+                            <span class="label">İyi</span>
+                            <span class="time">3 gün</span>
+                        </button>
+                        <button class="rate-btn easy" data-rating="4">
+                            <span class="label">Kolay</span>
+                            <span class="time">5 gün</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="study-stats-tab" class="tab-content">
+                <div class="stats-controls">
+                    <div class="stats-target-title" id="stats-today-target">Bugunku toplam calisma suresi hedefi: 00:00:00</div>
+                    <div class="stats-controls-row">
+                        <label>Baslangic Tarihi <input type="date" id="stats-start-date" class="modern-input"></label>
+                        <label>Gunluk Ortalama Hedef Saat
+                            <select id="stats-target-hours" class="modern-input">
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8" selected>8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="stats-table-wrap">
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Mat</th>
+                                <th>Türkçe</th>
+                                <th>Tarih</th>
+                                <th>Coğrafya</th>
+                                <th>Anayasa</th>
+                                <th>Mola</th>
+                                <th>Uyku</th>
+                                <th>🌅 İlk Başl.</th>
+                                <th>💡 Kırılma</th>
+                            </tr>
+                        </thead>
+                        <tbody id="study-stats-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 5. TRIALS TAB -->
+            <div id="trials-tab" class="tab-content">
+                <div class="trial-calculator">
+                    <div class="trial-type-toggle">
+                        <button class="toggle-btn active" id="trial-lisans-btn">Lisans (P3)</button>
+                        <button class="toggle-btn" id="trial-onlisans-btn">Önlisans (P93)</button>
+                    </div>
+
+                    <div class="calc-grid">
+                        <div class="calc-row header">
+                            <span>Ders</span>
+                            <span>Doğru</span>
+                            <span>Yanlış</span>
+                        </div>
+                        <!-- Rows -->
+                        <div class="calc-row">
+                            <span>Türkçe</span>
+                            <input type="number" id="tr-d" placeholder="0">
+                            <input type="number" id="tr-y" placeholder="0">
+                        </div>
+                        <div class="calc-row">
+                            <span>Matematik</span>
+                            <input type="number" id="mat-d" placeholder="0">
+                            <input type="number" id="mat-y" placeholder="0">
+                        </div>
+                        <div class="calc-row">
+                            <span>Tarih</span>
+                            <input type="number" id="tar-d" placeholder="0">
+                            <input type="number" id="tar-y" placeholder="0">
+                        </div>
+                        <div class="calc-row">
+                            <span>Coğrafya</span>
+                            <input type="number" id="cog-d" placeholder="0">
+                            <input type="number" id="cog-y" placeholder="0">
+                        </div>
+                        <div class="calc-row">
+                            <span>Anayasa</span>
+                            <input type="number" id="ana-d" placeholder="0">
+                            <input type="number" id="ana-y" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="calc-footer">
+                        <div class="score-display">
+                            <span class="label">Tahmini Puan</span>
+                            <span class="value" id="calculated-score">0.00</span>
+                        </div>
+                        <div class="calc-actions">
+                            <button class="primary-btn outline" id="calculate-btn">Hesapla</button>
+                            <button class="primary-btn hidden" id="save-trial-btn">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trial-history-container">
+                    <h3 id="trial-count-header">Geçmiş Denemeler</h3>
+                    <div id="trial-history-list">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. RESOURCES TAB -->
+            <div id="resources-tab" class="tab-content">
+                <div class="list-header">
+                    <h3>Kaynak Listesi</h3>
+                    <button class="small-btn" id="add-resource-btn">+ Ekle</button>
+                </div>
+                <div id="resource-list" class="resource-list">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+
+            <!-- 7. VOICE LIBRARY TAB -->
+            <div id="voice-library-tab" class="tab-content">
+                <!-- Global Player UI -->
+                <div class="global-player">
+                    <div class="player-info">
+                        <span class="now-playing-title" id="player-track-name">Oynatılmıyor...</span>
+                        <span class="now-playing-topic" id="player-topic-name">-</span>
+                    </div>
+
+                    <div class="player-progress-area">
+                        <span class="time-current" id="player-time-current">0:00</span>
+                        <input type="range" class="player-seek" id="player-seek-bar" value="0" step="0.1">
+                        <span class="time-total" id="player-time-total">0:00</span>
+                    </div>
+
+                    <div class="player-controls">
+                        <button class="player-btn" id="player-rewind" title="10sn Geri">⏪</button>
+                        <button class="player-btn" id="player-prev" title="Önceki">⏮️</button>
+                        <button class="player-btn play-btn" id="player-toggle" title="Oynat/Duraklat">▶️</button>
+                        <button class="player-btn" id="player-next" title="Sonraki">⏭️</button>
+                        <button class="player-btn" id="player-forward" title="10sn İleri">⏩</button>
+                    </div>
+
+                    <div class="player-extra-controls">
+                        <div class="control-group">
+                            <label>Hız:</label>
+                            <select id="player-speed-select">
+                                <option value="1">1x</option>
+                                <option value="1.25">1.25x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="1.75">1.75x</option>
+                                <option value="2">2x</option>
+                                <option value="2.5">2.5x</option>
+                                <option value="3">3x</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Uyku:</label>
+                            <select id="player-sleep-timer">
+                                <option value="0">Kapalı</option>
+                                <option value="1">1 dk</option>
+                                <option value="5">5 dk</option>
+                                <option value="15">15 dk</option>
+                                <option value="30">30 dk</option>
+                                <option value="60">1 sa</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="voice-library-content">
+                    <div class="list-header">
+                        <h3>Ders Kayıtları</h3>
+                    </div>
+                    <div id="voice-library-list" class="voice-list-container">
+                        <!-- Grouped by topic dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. BACKUP TAB -->
+            <div id="backup-tab" class="tab-content">
+                <div class="list-header">
+                    <h3>Yedekleme ve Geri Yükleme</h3>
+                </div>
+                <div class="backup-container" style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+                    <div class="backup-card"
+                        style="background: var(--surface-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <h4>💾 Yedek Al</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 10px 0;">
+                            Tüm verilerinizi (Notlar, Resimler, Ses Kayıtları, İstatistikler) tek bir dosya olarak
+                            indirin.
+                        </p>
+                        <button id="create-backup-btn" class="primary-btn">Yedek İndir (.json)</button>
+                        <div id="backup-progress-container" style="display:none; margin-top:14px;">
+                            <div id="backup-progress-text" style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:6px;">Hazırlanıyor...</div>
+                            <div style="background:var(--border-color); border-radius:6px; height:10px; overflow:hidden;">
+                                <div id="backup-progress-fill" style="height:100%; width:0%; background:var(--primary-color); border-radius:6px; transition:width 0.25s ease;"></div>
+                            </div>
+                            <div id="backup-progress-pct" style="font-size:0.78rem; color:var(--text-secondary); margin-top:4px; text-align:right;">%0</div>
+                        </div>
+                    </div>
+
+                    <div class="backup-card"
+                        style="background: var(--surface-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <h4>♻️ Geri Yükle</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 10px 0;">
+                            Daha önce aldığınız yedeği yükleyin.
+                            <br><strong style="color: var(--error-color);">UYARI: Mevcut veriler
+                                silinecektir!</strong>
+                        </p>
+                        <input type="file" id="restore-backup-input" accept=".json" hidden>
+                        <button id="restore-backup-btn" class="secondary-btn">Yedek Dosyası Seç ve Yükle</button>
+                    </div>
+
+                    <!-- Google Drive Sync -->
+                    <div class="backup-card"
+                        style="background: var(--surface-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); display: none;">
+                        <h4>☁️ Google Drive Senkronizasyon</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 10px 0;">
+                            Verilerinizi Google Drive'a otomatik olarak yedekleyin. Uygulama sıfırlansa bile verileriniz güvende kalır.
+                            <br><strong style="color: var(--success-color);">Opsiyonel:</strong> İsterseniz Google hesabınıza bağlanabilirsiniz.
+                        </p>
+                        
+                        <div id="drive-sync-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                            <!-- Sync Status -->
+                            <div id="drive-sync-status" class="sync-status disconnected">Google Drive'a bağlı değil</div>
+                            
+                            <!-- Last Sync Time -->
+                            <div id="drive-last-sync" style="font-size: 0.85rem; color: var(--text-secondary); display: none;"></div>
+                            
+                            <!-- Buttons -->
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button id="drive-connect-btn" class="primary-btn" style="display: none;">🔗 Google Hesabına Bağlan</button>
+                                <button id="drive-disconnect-btn" class="secondary-btn" style="display: none;">🔌 Bağlantıyı Kes</button>
+                                <button id="drive-sync-btn" class="primary-btn" disabled>🔄 Şimdi Senkronize Et</button>
+                                <button id="drive-restore-btn" class="secondary-btn" disabled>📥 Drive'dan Geri Yükle</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. SPEED READING TAB -->
+            <div id="speed-reading-tab" class="tab-content">
+                <div id="speed-reading-exercise-area" class="speed-reading-container">
+                    <!-- Dynamic content rendered by speed-reading-manager.js -->
+                </div>
+            </div>
+
+            <!-- 9. HABITS TAB -->
+            <div id="habits-tab" class="tab-content">
+                <!-- Alışkanlıklar Alt Sekmesi -->
+                <div id="habits-sub-content" class="habits-sub-content active">
+                    <div class="list-header">
+                        <h3>Günlük Alışkanlıklar</h3>
+                        <button class="small-btn" id="add-habit-btn">+ Ekle</button>
+                    </div>
+                    <div id="habits-list" class="habits-list">
+                        <!-- Dynamic habits will be rendered here -->
+                    </div>
+                    <div id="habits-empty-state" class="empty-state hidden">
+                        <p>Henüz alışkanlık eklenmedi.</p>
+                        <p class="sub-text">Günlük hedeflerinizi takip edin.</p>
+                    </div>
+                </div>
+
+                <!-- Yasin Alt Sekmesi -->
+                <div id="yasin-sub-content" class="habits-sub-content">
+                    <div class="yasin-container">
+                        <div class="yasin-controls">
+                            <div class="yasin-font-size-control">
+                                <label for="yasin-font-size">Punto:</label>
+                                <input type="number" id="yasin-font-size" class="yasin-font-size-input" min="8" max="24"
+                                    value="14" step="1">
+                            </div>
+                        </div>
+                        <div id="yasin-content" class="yasin-content">
+                            <!-- Yasin içeriği buraya yüklenecek -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cevşen Alt Sekmesi -->
+                <div id="cevsen-sub-content" class="habits-sub-content">
+                    <div class="cevsen-container">
+                        <div class="cevsen-controls-top">
+                            <div class="cevsen-audio-controls">
+                                <button class="cevsen-play-btn" id="cevsen-play-btn" title="Oynat">▶️</button>
+                                <select id="cevsen-speed-select" class="cevsen-speed-select">
+                                    <option value="1">1x</option>
+                                    <option value="1.5">1.5x</option>
+                                    <option value="2">2x</option>
+                                    <option value="2.5">2.5x</option>
+                                    <option value="3">3x</option>
+                                    <option value="3.5">3.5x</option>
+                                    <option value="4">4x</option>
+                                </select>
+                                <select id="cevsen-lang-select" class="cevsen-lang-select">
+                                    <option value="latin">Latin</option>
+                                    <option value="turkish">Türkçe</option>
+                                </select>
+                                <button class="cevsen-mode-btn" id="cevsen-mode-btn"
+                                    title="Otomatik/Manuel">Manuel</button>
+                            </div>
+                            <div class="cevsen-page-info">
+                                <span id="cevsen-current-bab">1</span> / <span id="cevsen-total-babs">100</span>
+                            </div>
+                        </div>
+                        <div class="cevsen-content-wrapper">
+                            <button class="cevsen-nav-btn cevsen-nav-left" id="cevsen-prev-btn"
+                                title="Önceki Bab">◀</button>
+                            <div class="cevsen-content" id="cevsen-content">
+                                <!-- Cevşen içeriği buraya yüklenecek -->
+                            </div>
+                            <button class="cevsen-nav-btn cevsen-nav-right" id="cevsen-next-btn"
+                                title="Sonraki Bab">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- FAB (Floating Action Button) -->
+        <!-- <div class="fab-container">
+            <button class="fab-btn" id="main-fab">+</button>
+        </div> -->
+    </div>
+
+    <!-- === MODALS === -->
+
+    <!-- Add Topic Modal -->
+    <div class="modal-overlay" id="add-topic-modal">
+        <div class="modal">
+            <h3>Yeni Konu Ekle</h3>
+            <div class="input-group">
+                <label>Konu Adı</label>
+                <input type="text" id="new-topic-name" class="modern-input" placeholder="Örn: Üslü Sayılar">
+            </div>
+            <div class="modal-footer">
+                <button class="ghost-btn" id="cancel-add-topic">İptal</button>
+                <button class="primary-btn" id="save-new-topic">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div class="modal-overlay" id="add-question-modal">
+        <div class="modal large">
+            <div class="modal-header">
+                <h3>Soru Ekle</h3>
+                <button class="close-modal-btn" id="cancel-add-question">✕</button>
+            </div>
+
+            <div class="input-group">
+                <label>Konu Seçin</label>
+                <select id="question-topic-select" class="modern-input">
+                    <!-- Dynamic -->
+                </select>
+            </div>
+
+            <!-- Inline New Topic Fields (Hidden by default) -->
+            <div id="q-new-topic-fields" class="hidden"
+                style="background: rgba(0,0,0,0.03); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px dashed var(--border-color);">
+                <div class="input-group" style="margin-bottom: 0.75rem;">
+                    <label style="font-size: 0.8rem;">Yeni Konu Başlığı</label>
+                    <input type="text" id="q-new-topic-name" class="modern-input" placeholder="Örn: Limit ve Türev">
+                </div>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.8rem;">Konu Detayı / Açıklama</label>
+                    <input type="text" id="q-new-topic-desc" class="modern-input"
+                        placeholder="Örn: Temel kurallar ve formüller">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Görsel (Sürükle veya Yapıştır)</label>
+                <div class="drop-zone" id="question-drop-zone">
+                    <p>Görseli buraya bırakın veya tıklayın</p>
+                    <input type="file" id="question-file-input" accept="image/*" hidden multiple>
+                </div>
+                <!-- Multi Preview -->
+                <div id="multi-preview-container" class="multi-preview-container"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="primary-btn full-width" id="save-new-question">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Cards Modal -->
+    <div class="modal-overlay" id="manage-cards-modal">
+        <div class="modal large">
+            <div class="modal-header">
+                <h3>Kartları Yönet</h3>
+                <button class="close-modal-btn" id="close-manage-cards">✕</button>
+            </div>
+            <div id="manage-cards-list" class="manage-cards-content">
+                <!-- Dynamic -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div class="modal-overlay" id="add-habit-modal">
+        <div class="modal">
+            <h3>Yeni Alışkanlık Ekle</h3>
+            <div class="input-group">
+                <label>Alışkanlık Adı</label>
+                <input type="text" id="habit-name-input" class="modern-input" placeholder="Örn: Su İç">
+            </div>
+            <div class="input-group">
+                <label>Günlük Hedef (Miktar)</label>
+                <input type="number" id="habit-target-input" class="modern-input" placeholder="1" min="1" value="1">
+            </div>
+            <div class="modal-footer">
+                <button class="ghost-btn" id="cancel-add-habit">İptal</button>
+                <button class="primary-btn" id="save-new-habit">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Resource Modal -->
+    <div class="modal-overlay" id="add-resource-modal">
+        <div class="modal">
+            <h3>Yeni Kaynak Ekle</h3>
+            <div class="input-group">
+                <label>Kaynak Adı</label>
+                <input type="text" id="resource-name-input" class="modern-input"
+                    placeholder="Örn: Benim Hocam Soru Bankası">
+            </div>
+            <div class="input-group">
+                <label>Kaynak Türü</label>
+                <select id="resource-type-select" class="modern-input">
+                    <option value="Konu Anlatımı">Konu Anlatımı</option>
+                    <option value="Soru Bankası">Soru Bankası</option>
+                    <option value="Branş Deneme">Branş Deneme</option>
+                    <option value="Genel Deneme">Genel Deneme</option>
+                    <option value="Video Ders">Video Ders</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Not (Opsiyonel)</label>
+                <input type="text" id="resource-note-input" class="modern-input"
+                    placeholder="Örn: 2024 Basım, Syf 150'de kaldım">
+            </div>
+            <div class="input-group">
+                <select id="resource-status-select" class="modern-input">
+                    <option value="0">Devam Ediyor</option>
+                    <option value="1">Bitti</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>PDF Yükle (Opsiyonel)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="resource-pdf-input" accept="application/pdf" hidden>
+                    <label for="resource-pdf-input" id="resource-pdf-label" class="file-input-label">
+                        📄 PDF Dosyası Seç
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ghost-btn" id="cancel-add-resource">İptal</button>
+                <button class="primary-btn" id="save-new-resource">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- === STUDY SESSION OVERLAY === -->
+    <div id="study-session-interface" class="hidden">
+        <div class="session-header">
+            <!-- Close Button (Top Right) -->
+            <button class="session-close-btn" id="exit-session-btn">✕</button>
+
+            <!-- Centered Topic Info & Controls -->
+            <div class="session-topic-info">
+                <h3 id="session-topic-title">Konu Başlığı</h3>
+
+                <!-- Controls Row -->
+                <div class="session-controls-row">
+                    <button class="timer-control-btn" id="timer-toggle-btn" title="Başlat/Duraklat">Başlat</button>
+                    <div class="timer-display" id="session-timer">00:00:00</div>
+                    <button class="timer-control-btn stop" id="timer-stop-btn" title="Bitir">BİTİR</button>
+
+                    <div class="header-q-tracker">
+                        <input type="number" id="session-q-input" placeholder="Soru" min="1">
+                        <button id="session-q-add-btn">Ekle</button>
+                        <span class="header-q-total" id="session-q-total">✍️ 0</span>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:center;margin-top:6px;">
+                    <button class="focus-break-tracker" id="focus-break-btn" title="Dikkatim dağıldı – kaydet">
+                        💡 Dikkat dağıldı: <span class="focus-break-count">0</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="session-body">
+            <!-- Chat / Notes Area -->
+            <div class="chat-container">
+                <div class="chat-history" id="chat-history">
+                    <!-- Messages go here -->
+                </div>
+            </div>
+
+            <!-- New: Standalone Recording Bar (always above input, non-blocking) -->
+            <div id="recording-bar" class="recording-bar hidden">
+                <div class="recording-bar-content">
+                    <div class="recording-pulse"></div>
+                    <span id="recording-time">00:00</span>
+                    <button id="pause-record-btn" class="pause-btn" title="Duraklat/Devam Et">⏸️</button>
+                    <div class="recording-actions">
+                        <button id="cancel-recording-btn" class="cancel-btn">🗑️</button>
+                        <button id="stop-recording-btn" class="stop-btn">🏁 Gönder</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+                <button class="chat-icon-btn" id="chat-img-btn" title="Görsel Ekle">📷</button>
+                <input type="file" id="chat-file-input" hidden accept="image/*" multiple>
+                <textarea id="chat-input" placeholder="Not bırakın veya görsel atın..." rows="1"></textarea>
+                <button class="chat-icon-btn" id="chat-mic-btn" title="Sesli Not">🎤</button>
+                <button class="chat-send-btn" id="chat-send-btn">➜</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- === STUDY SESSION SUMMARY OVERLAY === -->
+    <div id="study-summary-interface" class="hidden">
+        <div class="summary-header">
+            <button class="session-close-btn" id="exit-summary-btn">✕</button>
+            <div class="summary-topic-info">
+                <h3 id="summary-topic-title">Ders Özeti</h3>
+                <div class="summary-actions">
+                    <button class="primary-btn" id="summary-pdf-btn">📄 PDF İndir</button>
+                    <button class="secondary-btn" id="summary-tts-btn">🔊 Tümünü Seslendir</button>
+                </div>
+            </div>
+        </div>
+        <div class="summary-body">
+            <div id="summary-tts-controls" class="tts-player-mini hidden">
+                <span id="tts-status">Seslendiriliyor...</span>
+                <button id="tts-pause-btn">⏸️</button>
+                <button id="tts-stop-btn">⏹️</button>
+            </div>
+            <div id="summary-content" class="summary-doc-container">
+                <!-- Summary content will be populated here -->
+                <div id="summary-loader" class="loading-state">
+                    <div class="spinner"></div>
+                    <span>Ders özeti hazırlanıyor...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === DRAWING CANVAS (Global, always present) === -->
+    <canvas id="drawing-canvas"></canvas>
+
+    <!-- === PDF VIEWER OVERLAY === -->
+    <div id="pdf-viewer-overlay" class="hidden">
+        <div class="pdf-header">
+            <div class="pdf-title" id="pdf-title-text">Kitap Adı</div>
+
+            <!-- Timer Controls (Left Side) -->
+            <div class="pdf-timer-controls">
+                <button class="timer-btn" id="pdf-timer-start">Başlat</button>
+                <span class="timer-display" id="pdf-timer-display">00:00:00</span>
+                <button class="timer-btn stop" id="pdf-timer-stop">Bitir</button>
+                <div class="question-counter">
+                    <input type="number" id="pdf-question-input" placeholder="Soru" min="1">
+                    <button id="pdf-question-add">Ekle</button>
+                    <span id="pdf-question-total">✍️ 0</span>
+                </div>
+                <div class="zoom-control">
+                    <label for="pdf-zoom-input"
+                        style="font-size:0.75rem; color:var(--text-secondary); margin-left:8px;">Yakınlaştırma
+                        (%)</label>
+                    <input type="number" id="pdf-zoom-input" min="50" max="300" step="10" value="125"
+                        style="width:70px; padding:2px 4px; border-radius:4px; border:1px solid var(--border-color); margin-left:4px;">
+                </div>
+                <button id="pdf-header-toggle-btn" class="pdf-header-toggle-btn" title="Üst Menüyü Gizle/Göster">👁️</button>
+                <div class="pdf-align-group" title="PDF hizalama">
+                    <button class="pdf-align-btn" id="pdf-align-left" data-align="left" title="Sola Hizala">◀</button>
+                    <button class="pdf-align-btn active" id="pdf-align-center" data-align="center" title="Ortala">⬛</button>
+                    <button class="pdf-align-btn" id="pdf-align-right" data-align="right" title="Sağa Hizala">▶</button>
+                </div>
+                <button class="pdf-secondary-toggle-btn" id="pdf-secondary-toggle" title="2. PDF Görüntüleyici Aç/Kapat">🪟</button>
+                <button class="pdf-paper-mode-btn" id="pdf-paper-mode-toggle" title="Kağıt/Kitap Modu Aç">📖</button>
+                <button class="pdf-gemini-toggle-btn" id="pdf-gemini-toggle" title="Gemini Chat Aç/Kapat">✨</button>
+                <button class="pdf-gemini-refresh-btn" id="pdf-gemini-refresh" title="Gemini Penceresini Yenile" disabled>🔄</button>
+                <button class="pdf-notes-toggle-btn" id="pdf-notes-toggle" title="Notlar Aç/Kapat">📝</button>
+            </div>
+
+            <!-- Page Navigation (Center) -->
+            <div class="pdf-controls">
+                <div class="page-nav">
+                    <span><span id="current-page-indicator" class="page-number-input" contenteditable="false" title="Sayfa numarasına tıklayarak değiştir">1</span> / <span id="page-count">--</span></span>
+                </div>
+            </div>
+
+            <button class="pdf-btn close-viewer-btn" id="close-pdf-btn" title="Kapat">✕</button>
+        </div>
+
+        <!-- Recording Bar (geçici olarak gizlendi) -->
+        <div id="pdf-recording-bar" class="recording-bar" style="display:none">
+            <div class="recording-bar-content">
+                <div class="recording-pulse"></div>
+                <span id="pdf-recording-time">00:00</span>
+                <div class="recording-actions">
+                    <select id="pdf-mic-select" class="mic-select" title="Mikrofon Seç"
+                        style="min-width:140px; padding:4px 6px; border-radius:6px; border:1px solid var(--border-color); font-size:0.8rem;">
+                        <option value="">Varsayılan Mikrofon</option>
+                    </select>
+                    <!-- Yeni: Kayıt Başlat/Durdur butonu -->
+                    <button id="pdf-start-record" class="start-btn" title="Kaydı Başlat">⏺ Başlat</button>
+                    <button id="pdf-pause-record" class="pause-btn" title="Duraklat/Devam Et">⏸️</button>
+                    <button id="pdf-cancel-record" class="cancel-btn">🗑️</button>
+                    <button id="pdf-send-record" class="stop-btn">🏁 Gönder</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pdf-body">
+            <div class="pdf-vertical-toolbar" id="pdf-vertical-toolbar">
+                <!-- Drag Handle -->
+                <div class="toolbar-drag-handle" id="toolbar-drag-handle" title="Taşımak için basılı tut">
+                    <span class="toolbar-drag-dots">⠿</span>
+                </div>
+
+                <!-- 2P - İkincil PDF aç/kapat -->
+                <div class="tool-section">
+                    <button class="tool-btn toolbar-2p-btn" id="toolbar-2p-btn" title="2. PDF Görüntüleyici Aç/Kapat">2P</button>
+                </div>
+
+                <!-- G - Gemini Toggle Button -->
+                <div class="tool-section">
+                    <button class="tool-btn toolbar-gemini-btn" id="toolbar-gemini-btn" title="Alan Seç — Görsel Panoya Kopyala">G</button>
+                </div>
+
+                <!-- Soru Ekle (G'nin altında, her zaman görünür) -->
+                <div class="tool-section">
+                    <button class="tool-btn" id="pdf-screenshot-question" title="Soru Ekle">❓</button>
+                </div>
+                <div class="divider"></div>
+
+                <!-- Main tools (always visible) -->
+                <div class="tool-section tool-section-main">
+                    <button class="tool-btn" id="pdf-hand" title="Kaydır (El Aracı)">🖐️</button>
+                    <button class="tool-btn active" id="pdf-pen" title="Kalem">✏️</button>
+                    <button class="tool-btn" id="pdf-eraser" title="Silgi">🧹</button>
+                    <button class="tool-btn active" id="pdf-continuous-mode" title="Sürekli Mod: Açıkken not/soru ekleme modu kapanmaz" data-text="Açık"></button>
+
+                    <!-- K - Kronometre -->
+                    <button class="tool-btn toolbar-kronometer-btn" id="toolbar-kronometer-btn" title="Kronometre Göster/Gizle">K</button>
+
+                    <!-- Toggle for collapsible tools -->
+                    <button class="tool-btn toolbar-tools-toggle" id="toolbar-tools-toggle" title="Araçları Göster/Gizle">▼</button>
+
+                    <!-- Collapsible section (default hidden) -->
+                    <div class="toolbar-collapsible" id="toolbar-collapsible">
+                        <button class="tool-btn" id="pdf-screenshot-note" title="Not Ekle">📝</button>
+                        <button class="tool-btn" id="pdf-manual-question" title="Kopyalanan Görseli Soru Olarak Ekle">📸</button>
+                        <button class="tool-btn" id="pdf-optic-toggle" title="Optik Formu Aç/Kapat">📋</button>
+                        <div class="color-dot active pdf-color-dot" data-color="#ff0000" style="background:#ff0000;"></div>
+                        <div class="color-picker-wrapper">
+                            <button class="color-picker-btn" id="pdf-color-picker-btn" title="Renk Seç">🎨</button>
+                            <input type="color" id="pdf-color-picker-input" value="#ff0000" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Size Controls (gizli) -->
+                <div class="tool-section" style="display:none">
+                    <label class="size-label">Kalem Kalınlığı</label>
+                    <input type="range" id="pdf-pen-size" min="1" max="20" value="2" class="size-slider">
+                    <span id="pdf-pen-size-display" class="size-value">2px</span>
+                </div>
+                <div class="tool-section" style="display:none">
+                    <label class="size-label">Silgi Kalınlığı</label>
+                    <input type="range" id="pdf-eraser-size" min="10" max="50" value="20" class="size-slider">
+                    <span id="pdf-eraser-size-display" class="size-value">20px</span>
+                </div>
+                <div class="tool-section" style="display:none">
+                    <label class="size-label" for="hand-scroll-speed">El aracı kaydırma hızı</label>
+                    <input type="range" id="hand-scroll-speed" min="0.5" max="5" step="0.1" value="3"
+                        class="size-slider">
+                    <span id="hand-scroll-speed-value" class="size-value">3.0x</span>
+                </div>
+            </div>
+
+            <div class="pdf-pages-container" id="pdf-pages-container">
+                <div class="pdf-pages-wrapper" id="pdf-pages-wrapper">
+                    <!-- Pages will be rendered here dynamically -->
+                </div>
+            </div>
+
+            <!-- Kronometre Widget -->
+            <div id="pdf-kronometer-widget" class="pdf-kronometer-widget hidden">
+                <div class="kronometer-drag-handle" id="kronometer-drag-handle" title="Konumu değiştir">⠿</div>
+                <button class="kronometer-btn kronometer-reset-btn" id="kronometer-reset-btn" title="Sıfırla">S</button>
+                <button class="kronometer-btn kronometer-play-btn" id="kronometer-play-btn" title="Başlat/Duraklat">▶</button>
+                <div class="kronometer-display" id="kronometer-display">00:00</div>
+            </div>
+
+            <!-- Optik Form Paneli (sol toolbarın sağına yapışık) -->
+            <div id="pdf-optic-panel" class="pdf-optic-panel hidden">
+                <div class="pdf-optic-header">
+                    <div id="pdf-optic-handle" class="pdf-optic-handle" title="Yukarı/Aşağı taşı">⋮⋮</div>
+                    <div class="pdf-optic-tabs">
+                        <button class="pdf-optic-tab active" data-optic-tab="GY">Genel Yetenek</button>
+                        <button class="pdf-optic-tab" data-optic-tab="GK">Genel Kültür</button>
+                    </div>
+                </div>
+                <div class="pdf-optic-body">
+                    <div class="pdf-optic-image-wrapper">
+                        <img src="images/optik.png" alt="Optik Form" class="pdf-optic-image">
+                        <!-- Her sekme için ayrı çizim katmanı -->
+                        <canvas id="pdf-optic-canvas-GY" class="pdf-optic-canvas"></canvas>
+                        <canvas id="pdf-optic-canvas-GK" class="pdf-optic-canvas hidden"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- === RESOURCE CONTENT VIEWER OVERLAY === -->
+    <div id="resource-content-viewer" class="hidden">
+        <div class="resource-viewer-header">
+            <button class="session-close-btn" id="close-resource-viewer-btn">✕</button>
+            <h3 id="resource-viewer-title">Kaynak İçeriği</h3>
+            <div class="resource-viewer-actions">
+                <button class="primary-btn" id="resource-viewer-pdf-btn">📄 PDF İndir</button>
+                <button class="secondary-btn" id="resource-viewer-tts-btn">🔊 Tümünü Seslendir</button>
+            </div>
+        </div>
+        <div class="resource-viewer-body">
+            <div id="resource-viewer-content" class="resource-content-container">
+                <!-- Resource content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- === 2. PDF GÖRÜNTÜLEYICI POPUP (overlay dışında, bağımsız) === -->
+    <div id="pdf-secondary-popup" class="pdf-secondary-popup hidden">
+        <div class="pdf-secondary-header" id="pdf-secondary-drag-handle">
+            <span class="pdf-secondary-drag-icon" title="Taşı">⠿</span>
+            <span class="pdf-secondary-title">2. PDF Görüntüleyici</span>
+            <div class="pdf-secondary-nav">
+                <button class="pdf-secondary-nav-btn" id="pdf-secondary-prev" title="Önceki Sayfa">◀</button>
+                <span class="pdf-secondary-page-info">
+                    <span id="pdf-secondary-current">1</span> / <span id="pdf-secondary-total">--</span>
+                </span>
+                <button class="pdf-secondary-nav-btn" id="pdf-secondary-next" title="Sonraki Sayfa">▶</button>
+            </div>
+            <div class="pdf-secondary-zoom">
+                <button class="pdf-secondary-zoom-btn" id="pdf-secondary-zoom-out" title="Uzaklaştır">−</button>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="pdf-secondary-zoom-input" class="" value="90" title="Yakınlaştırma (%)" style="width:42px;text-align:center;">
+                <span class="pdf-secondary-zoom-pct">%</span>
+                <button class="pdf-secondary-zoom-btn" id="pdf-secondary-zoom-in" title="Yakınlaştır">+</button>
+            </div>
+            <button class="pdf-secondary-close-btn" id="pdf-secondary-close" title="Kapat">✕</button>
+        </div>
+        <div class="pdf-secondary-body" id="pdf-secondary-body">
+            <div class="pdf-secondary-pages-wrapper" id="pdf-secondary-pages-wrapper">
+                <!-- Sayfalar buraya yüklenecek -->
+            </div>
+        </div>
+        <div class="pdf-secondary-resize-handle" id="pdf-secondary-resize-handle" title="Yeniden Boyutlandır"></div>
+    </div>
+
+    <!-- === GEMİNİ CHAT POPUP (sürüklenebilir, yeniden boyutlandırılabilir) === -->
+    <div id="pdf-gemini-popup" class="pdf-gemini-popup hidden">
+        <div class="pdf-gemini-header" id="pdf-gemini-drag-handle">
+            <span class="pdf-gemini-drag-icon" title="Taşı">⠿</span>
+            <span class="pdf-gemini-title">✨ Gemini Chat</span>
+            <div class="pdf-gemini-header-actions">
+                <button class="pdf-gemini-header-btn pdf-gemini-capture-btn" id="pdf-gemini-capture" title="Ekrandan Alan Seç ve Kopyala">📷</button>
+            </div>
+            <button class="pdf-gemini-close-btn" id="pdf-gemini-close" title="Kapat">✕</button>
+        </div>
+        <div class="pdf-gemini-body" id="pdf-gemini-body">
+            <div class="gemini-iframe-container" id="gemini-iframe-container">
+                <div class="gemini-open-bar" id="gemini-open-bar">
+                    <button class="gemini-open-btn" id="gemini-open-new-window">🔗 Gemini'yi Aç</button>
+                </div>
+                <iframe id="gemini-frame" class="gemini-frame" allow="camera; microphone; clipboard-read; clipboard-write" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"></iframe>
+                <div class="gemini-iframe-blocked" id="gemini-iframe-blocked">
+                    <div class="gemini-blocked-icon">🔗</div>
+                    <p class="gemini-blocked-text">Gemini, güvenlik nedeniyle çerçeve içine yüklenemiyor.</p>
+                    <button class="gemini-open-btn gemini-open-btn-large" id="gemini-open-new-window-2">Gemini'yi Yeni Pencerede Aç</button>
+                    <p class="gemini-blocked-hint">Açılan pencereyi yanınıza konumlandırarak PDF ile yan yana kullanabilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+        <div class="pdf-gemini-resize-handle" id="pdf-gemini-resize-handle" title="Yeniden Boyutlandır"></div>
+    </div>
+
+    <!-- === NOTLAR POPUP (sürüklenebilir, yeniden boyutlandırılabilir) === -->
+    <div id="pdf-notes-popup" class="pdf-notes-popup hidden">
+        <div class="pdf-notes-header" id="pdf-notes-drag-handle">
+            <span class="pdf-notes-drag-icon" title="Taşı">⠿</span>
+            <span class="pdf-notes-title">📝 Notlar</span>
+            <div class="pdf-notes-header-actions">
+                <label class="pdf-notes-color-label" title="Yazı Rengi">
+                    <span class="pdf-notes-color-icon">A</span>
+                    <input type="color" id="pdf-notes-text-color" value="#1a1a2e" title="Yazı Rengi">
+                </label>
+                <label class="pdf-notes-color-label" title="Arka Plan Rengi">
+                    <span class="pdf-notes-color-icon pdf-notes-bg-icon">◼</span>
+                    <input type="color" id="pdf-notes-bg-color" value="#fffde7" title="Arka Plan Rengi">
+                </label>
+            </div>
+            <button class="pdf-notes-close-btn" id="pdf-notes-close" title="Kapat">✕</button>
+        </div>
+        <div class="pdf-notes-body" id="pdf-notes-body">
+            <textarea id="pdf-notes-textarea" class="pdf-notes-textarea" placeholder="Bu PDF için notlarınızı buraya yazın..."></textarea>
+        </div>
+        <div class="pdf-notes-resize-handle" id="pdf-notes-resize-handle" title="Yeniden Boyutlandır"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="js/chrome-polyfill.js"></script>
+    <script src="lib/sql-wasm.js"></script>
+    <script src="lib/pdf.min.js"></script>
+    <script type="module" src="js/sidepanel.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+
+</html>
