@@ -51,12 +51,6 @@ export function setupResourcesUI() {
             return;
         }
 
-        // PDF boyut bilgisi (sadece büyük dosyalarda bilgi ver, bloklamaz)
-        if (pdfFile && pdfFile.size > 50 * 1024 * 1024) {
-            const sizeMB = (pdfFile.size / (1024 * 1024)).toFixed(0);
-            showToast(`Büyük PDF (${sizeMB} MB) yükleniyor, lütfen bekleyin...`, 'warning');
-        }
-
         const newId = addResource(appState.currentSubject, name, type, note, status);
 
         if (pdfFile && newId) {
@@ -296,12 +290,6 @@ function openUpdateModal(resource) {
         const pdfFile = document.getElementById('update-res-pdf-input').files[0];
 
         if (name) {
-            // PDF boyut bilgisi (bloklamaz)
-            if (pdfFile && pdfFile.size > 50 * 1024 * 1024) {
-                const sizeMB = (pdfFile.size / (1024 * 1024)).toFixed(0);
-                showToast(`Büyük PDF (${sizeMB} MB) yükleniyor, lütfen bekleyin...`, 'warning');
-            }
-
             updateResource(resource.id, name, type, note, status);
 
             if (pdfFile) {
