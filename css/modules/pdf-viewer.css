@@ -187,7 +187,28 @@
     box-shadow: 0 4px 24px rgba(0,0,0,0.55);
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
     /* Default position set by JS */
+}
+
+/* iOS seçim/kopyalama tutamaçlarını engelle */
+.pdf-vertical-toolbar *,
+.pdf-vertical-toolbar .tool-btn,
+.pdf-vertical-toolbar .toolbar-drag-handle,
+.toolbar-drag-handle,
+.pdf-body .tool-btn {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Drag Handle - sürükleme için touch-action: none şart */
+.toolbar-drag-handle,
+.kronometer-drag-handle {
+    touch-action: none !important;
 }
 
 /* Drag Handle */
