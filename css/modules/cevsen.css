@@ -1,0 +1,222 @@
+/* Cevşen Tab Styles */
+.cevsen-container {
+    display: flex;
+    flex-direction: column;
+    width: 777px;
+    height: 580px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.cevsen-controls-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.cevsen-content-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    height: calc(580px - 120px); /* Toplam yükseklik - üst kontroller */
+    min-height: 0;
+}
+
+.cevsen-nav-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--primary-color);
+    background: var(--bg-color);
+    color: var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-top: 1rem;
+}
+
+.cevsen-nav-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.cevsen-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cevsen-page-info {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 80px;
+    text-align: center;
+}
+
+.cevsen-audio-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.cevsen-play-btn {
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.cevsen-play-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.cevsen-play-btn.playing {
+    background: var(--error-color);
+    border-color: var(--error-color);
+}
+
+.cevsen-speed-select,
+.cevsen-lang-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.cevsen-mode-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--primary-color);
+    background: var(--bg-color);
+    color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.cevsen-mode-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.cevsen-mode-btn.auto {
+    background: var(--primary-color);
+    color: white;
+}
+
+.cevsen-content {
+    flex: 1;
+    overflow: hidden;
+    padding: 1rem;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+
+.cevsen-content .latin-line,
+.cevsen-content .turkish-line {
+    font-size: 0.9rem;
+    margin: 0;
+    padding: 0.3rem 0;
+    color: var(--text-primary);
+    line-height: 1.4;
+    text-align: left;
+    display: block;
+    flex-shrink: 0;
+}
+
+/* Numaralı satırlar için özel stil - düzenli alt alta hizalı */
+.cevsen-content .latin-line.numbered,
+.cevsen-content .turkish-line.numbered {
+    padding: 0.25rem 0;
+    margin: 0;
+    line-height: 1.4;
+    border-bottom: none;
+    display: block;
+}
+
+/* Numarasız satırlar (başlık, açıklama) */
+.cevsen-content .latin-line:not(.numbered),
+.cevsen-content .turkish-line:not(.numbered) {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 0.85rem;
+}
+
+.cevsen-content .turkish-line {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Son numaralı satırdan sonra boşluk */
+.cevsen-content .latin-line.numbered:last-of-type,
+.cevsen-content .turkish-line.numbered:last-of-type {
+    margin-bottom: 0.5rem;
+}
+
+.cevsen-content .russian {
+    font-size: 0.95rem;
+    margin: 1rem 0;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-style: italic;
+}
+
+/* Dua bölümü artık ayrı section değil, ana metnin devamı */
+.cevsen-content .latin-dua,
+.cevsen-content .turkish-dua {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid #dc2626;
+    line-height: 1.4;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.habits-sub-content {
+    display: none;
+}
+
+.habits-sub-content.active {
+    display: block;
+}
