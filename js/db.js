@@ -1678,43 +1678,75 @@ export function updateResourceOrder(subject, orderedIds) {
 }
 // === PDF & ANNOTATIONS ===
 
-// IndexedDB Helper for Large Blobs
+// === PDF DEPOLAMA: OPFS (öncelikli) + IndexedDB (fallback) ===
+// OPFS = Origin Private File System — büyük dosyalar için tasarlanmış,
+// iOS 15.2+ ve tüm modern tarayıcılarda çalışır, IDB'den çok daha yüksek kota.
+
 export const IDB_CONFIG = {
     name: 'KPSS_PDF_Store',
     version: 2,
     store: 'pdfs'
 };
 
+// ── OPFS ──────────────────────────────────────────────────────────────────
+
+async function isOPFSAvailable() {
+    try {
+        if (!navigator.storage || !navigator.storage.getDirectory) return false;
+        await navigator.storage.getDirectory();
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+function opfsFilename(key) {
+    return key.replace(/[^a-zA-Z0-9_-]/g, '_') + '.bin';
+}
+
+async function savePDFToOPFS(key, arrayBuffer) {
+    const root = await navigator.storage.getDirectory();
+    const filename = opfsFilename(key);
+    const fh = await root.getFileHandle(filename, { create: true });
+    const writable = await fh.createWritable();
+    await writable.write(arrayBuffer);
+    await writable.close();
+    logger.log(`[OPFS] PDF saved: ${filename} (${(arrayBuffer.byteLength / 1e6).toFixed(1)} MB)`);
+    return 'opfs:' + filename;
+}
+
+async function getPDFFromOPFS(filename) {
+    const root = await navigator.storage.getDirectory();
+    const fh = await root.getFileHandle(filename);
+    const file = await fh.getFile();
+    return await file.arrayBuffer();
+}
+
+async function deletePDFFromOPFS(filename) {
+    try {
+        const root = await navigator.storage.getDirectory();
+        await root.removeEntry(filename);
+    } catch (_) {}
+}
+
+// ── IndexedDB (fallback) ───────────────────────────────────────────────────
+
 function openPDFDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(IDB_CONFIG.name, IDB_CONFIG.version);
         request.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains(IDB_CONFIG.store)) {
-                db.createObjectStore(IDB_CONFIG.store);
+            const idb = e.target.result;
+            if (!idb.objectStoreNames.contains(IDB_CONFIG.store)) {
+                idb.createObjectStore(IDB_CONFIG.store);
             }
         };
         request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => {
-            const err = e.target.error;
-            reject(err || new Error('IndexedDB açılamadı'));
-        };
-        request.onblocked = () => {
-            reject(new Error('IndexedDB bağlantısı engellendi'));
-        };
+        request.onerror = (e) => reject(e.target.error || new Error('IndexedDB açılamadı'));
+        request.onblocked = () => reject(new Error('IndexedDB bağlantısı engellendi'));
     });
 }
 
-async function savePDFToIDB(key, blobData) {
-    if (blobData instanceof ArrayBuffer) {
-        const mb = (blobData.byteLength / 1_000_000).toFixed(1);
-        logger.log(`[IDB] Storing ArrayBuffer PDF: ${mb}MB`);
-        if (blobData.byteLength > 50_000_000) {
-            logger.warn(`[IDB] Very large PDF: ${mb}MB — iOS quota riski`);
-        }
-    } else if (typeof blobData === 'string' && blobData.length > 52_000_000) {
-        logger.warn(`[IDB] Large base64 PDF: ${(blobData.length / 1_000_000).toFixed(1)}MB`);
-    }
+async function savePDFToIDB(key, data) {
     const idb = await openPDFDB();
     return new Promise((resolve, reject) => {
         let tx;
@@ -1726,65 +1758,77 @@ async function savePDFToIDB(key, blobData) {
         tx.oncomplete = () => resolve();
         tx.onerror   = () => reject(tx.error || new Error('IDB yazma hatası'));
         tx.onabort   = () => reject(tx.error || new Error('IDB transaction iptal edildi'));
-
         const store = tx.objectStore(IDB_CONFIG.store);
-        const req = store.put(blobData, key);
-        req.onerror = () => {
-            logger.error('[IDB] put error:', req.error);
-        };
+        const req = store.put(data, key);
+        req.onerror = () => logger.error('[IDB] put error:', req.error);
     });
 }
 
 async function getPDFFromIDB(key) {
-    const db = await openPDFDB();
+    const idb = await openPDFDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(IDB_CONFIG.store, 'readonly');
+        const tx = idb.transaction(IDB_CONFIG.store, 'readonly');
         const store = tx.objectStore(IDB_CONFIG.store);
         const req = store.get(key);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result ?? null);
+        req.onerror   = () => reject(req.error || new Error('IDB okuma hatası'));
     });
 }
 
+// ── Ortak kaydet / oku ────────────────────────────────────────────────────
+
 export async function saveResourcePDF(resourceId, pdfData) {
     if (!db || !resourceId || !pdfData) {
-        logger.error("saveResourcePDF: Invalid arguments", { resourceId, hasPDF: !!pdfData });
+        logger.error("saveResourcePDF: geçersiz argümanlar", { resourceId, hasPDF: !!pdfData });
         saveResourcePDF._lastError = 'Geçersiz argümanlar';
         return false;
     }
-    const storageKey = `res_pdf_${resourceId}`;
+
+    // Persistent storage iste — tarayıcının veriyi silmesini engeller
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().then(granted =>
+            logger.log('[Storage] persist:', granted ? 'granted' : 'denied')
+        ).catch(() => {});
+    }
+
+    const baseKey = `res_pdf_${resourceId}`;
+    let actualKey = baseKey;
 
     try {
-        // 1. Save to IndexedDB (asynchronous) — ArrayBuffer veya base64 string
-        await savePDFToIDB(storageKey, pdfData);
+        const sizeMB = pdfData instanceof ArrayBuffer
+            ? (pdfData.byteLength / 1e6).toFixed(1)
+            : (typeof pdfData === 'string' ? (pdfData.length / 1e6).toFixed(1) : '?');
+        logger.log(`[PDF] Saving resource ${resourceId} — ${sizeMB} MB`);
 
-        // 2. Update SQL Metadata (synchronous memory update)
+        // Önce OPFS dene (ArrayBuffer için, iOS 15.2+)
+        if (pdfData instanceof ArrayBuffer && await isOPFSAvailable()) {
+            actualKey = await savePDFToOPFS(baseKey, pdfData);
+            logger.log('[PDF] OPFS storage success, key:', actualKey);
+        } else {
+            // IDB fallback
+            await savePDFToIDB(baseKey, pdfData);
+            actualKey = baseKey;
+            logger.log('[PDF] IDB storage success, key:', actualKey);
+        }
+
+        // SQL metadata güncelle
         const stmt = db.prepare("UPDATE resources SET pdf_storage_key = ? WHERE id = ?");
-        stmt.run([storageKey, resourceId]);
+        stmt.run([actualKey, resourceId]);
         stmt.free();
-
-        // 3. Persist memory to storage (asynchronous)
         saveDB();
 
-        logger.log(`PDF saved for resource ${resourceId} with key ${storageKey}`);
         return true;
     } catch (e) {
-        logger.error("IDB or SQL Save Failed for PDF:", e);
+        logger.error("PDF kaydetme hatası:", e);
         let errName = '';
         if (e) {
             errName = e.name || e.message || '';
-            if (!errName) {
-                try { errName = String(e); } catch (_) { errName = ''; }
-            }
-            if (!errName || errName === '[object Object]') {
-                errName = 'IDB hatası';
-            }
+            if (!errName) { try { errName = String(e); } catch (_) { errName = ''; } }
+            if (!errName || errName === '[object Object]') errName = 'Depolama hatası';
         } else {
-            errName = 'IDB bilinmeyen hata (null)';
+            errName = 'Bilinmeyen hata (null)';
         }
-
         if (errName.toLowerCase().includes('quota') || errName.toLowerCase().includes('storage')) {
-            logger.warn('[PDF] QuotaExceededError — depolama alanı dolu');
             saveResourcePDF._lastError = 'quota';
         } else {
             saveResourcePDF._lastError = errName;
@@ -1795,26 +1839,37 @@ export async function saveResourcePDF(resourceId, pdfData) {
 
 export async function getResourcePDF(resourceId) {
     if (!db) return null;
-    // FIXED: Using prepared statement to prevent SQL injection
     const stmt = db.prepare("SELECT pdf_storage_key FROM resources WHERE id = ?");
     stmt.bind([resourceId]);
     let key = null;
-    if (stmt.step()) {
-        const result = stmt.getAsObject();
-        key = result.pdf_storage_key;
-    }
+    if (stmt.step()) key = stmt.getAsObject().pdf_storage_key;
     stmt.free();
+    if (!key) return null;
 
-    if (key) {
+    try {
+        // OPFS key mi?
+        if (key.startsWith('opfs:')) {
+            const filename = key.slice(5);
+            logger.log('[PDF] Reading from OPFS:', filename);
+            return await getPDFFromOPFS(filename);
+        }
+        // IDB (eski veya fallback)
+        logger.log('[PDF] Reading from IDB:', key);
+        const data = await getPDFFromIDB(key);
+        if (data != null) return data;
+        // Son çare: chrome.storage.local (çok eski veriler)
+        const stored = await chrome.storage.local.get(key);
+        return stored[key] ?? null;
+    } catch (e) {
+        logger.error('[PDF] Okuma hatası:', e);
+        // IDB başarısız → chrome.storage.local dene
         try {
-            return await getPDFFromIDB(key);
-        } catch (e) {
-            logger.error("IDB Read Failed, trying storage.local", e);
-            const data = await chrome.storage.local.get(key);
-            return data[key];
+            const stored = await chrome.storage.local.get(key);
+            return stored[key] ?? null;
+        } catch (_) {
+            return null;
         }
     }
-    return null;
 }
 
 
