@@ -1,4 +1,9 @@
 {
+  "version": 2,
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "installCommand": "echo skip",
   "headers": [
     {
       "source": "/(.*)",
