@@ -67,7 +67,12 @@ export function setupResourcesUI() {
                 if (success) {
                     showToast('Kaynak ve PDF eklendi');
                 } else {
-                    showToast('Kaynak eklendi (PDF Hatası)', 'error');
+                    const errType = saveResourcePDF._lastError || '';
+                    if (errType === 'quota') {
+                        showToast('PDF kaydedilemedi: Depolama alanı dolu', 'error');
+                    } else {
+                        showToast(`PDF kaydedilemedi (${errType || 'bilinmeyen hata'})`, 'error');
+                    }
                 }
 
                 loadResources();
