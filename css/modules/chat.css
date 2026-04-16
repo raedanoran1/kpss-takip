@@ -1,0 +1,134 @@
+/* === CHAT INTERFACE === */
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.chat-bubble {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: var(--shadow-sm);
+    background: var(--surface-color);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+}
+
+.chat-bubble-delete {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.chat-bubble:hover .chat-bubble-delete {
+    opacity: 1;
+}
+
+.chat-bubble-delete:hover {
+    transform: scale(1.2);
+}
+
+.chat-bubble.image-only {
+    padding: 4px;
+}
+
+.chat-bubble img {
+    max-width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+.chat-time {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.chat-input-area {
+    padding: 1rem;
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#chat-input {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    padding: 0.75rem 1rem;
+    border-radius: 24px;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    max-height: 100px;
+}
+
+.chat-icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.chat-icon-btn:hover {
+    opacity: 1;
+}
+
+.chat-send-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.chat-send-btn:hover {
+    transform: scale(1.1);
+}
+
+[data-theme='dark'] .chat-bubble {
+    background: #2d3748;
+}
