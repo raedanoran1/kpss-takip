@@ -1700,13 +1700,30 @@ function openPDFDB() {
 }
 
 async function savePDFToIDB(key, blobData) {
-    const db = await openPDFDB();
+    // Boyut uyarısı (base64 ~50MB = ~37MB raw)
+    if (blobData && blobData.length > 52_000_000) {
+        logger.warn(`[IDB] Large PDF: ${(blobData.length / 1_000_000).toFixed(1)}MB base64`);
+    }
+    const idb = await openPDFDB();
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(IDB_CONFIG.store, 'readwrite');
+        let tx;
+        try {
+            tx = idb.transaction(IDB_CONFIG.store, 'readwrite');
+        } catch (e) {
+            return reject(e);
+        }
+        // tx.oncomplete — iOS Safari da dahil tüm tarayıcılarda
+        // transaction gerçekten diske yazıldıktan sonra tetiklenir.
+        tx.oncomplete = () => resolve();
+        tx.onerror   = () => reject(tx.error);
+        tx.onabort   = () => reject(tx.error || new Error('IDB transaction aborted'));
+
         const store = tx.objectStore(IDB_CONFIG.store);
         const req = store.put(blobData, key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
+        req.onerror = () => {
+            // req hatası transaction'ı otomatik abort eder → tx.onabort üstlenir
+            logger.error('[IDB] put error:', req.error);
+        };
     });
 }
 
@@ -1745,6 +1762,14 @@ export async function saveResourcePDF(resourceId, pdfBase64) {
         return true;
     } catch (e) {
         logger.error("IDB or SQL Save Failed for PDF:", e);
+        // Hata nedenini kaynak yöneticisine ilet (opsiyonel)
+        const errName = e && (e.name || e.message || String(e));
+        if (errName && errName.toLowerCase().includes('quota')) {
+            logger.warn('[PDF] QuotaExceededError — depolama alanı dolu');
+            saveResourcePDF._lastError = 'quota';
+        } else {
+            saveResourcePDF._lastError = errName || 'unknown';
+        }
         return false;
     }
 }
