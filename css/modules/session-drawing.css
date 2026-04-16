@@ -1,0 +1,119 @@
+/* Session Drawing Toolbar (Same style as global) */
+.session-drawing-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    margin-left: auto;
+}
+
+.session-drawing-toolbar .drawing-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.4rem 0.75rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.session-drawing-toolbar .drawing-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.session-drawing-toolbar .drawing-toggle-btn.active {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.session-drawing-toolbar .drawing-tools-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.session-drawing-toolbar .color-palette-mini {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.session-drawing-toolbar .color-btn-mini {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.session-drawing-toolbar .color-btn-mini:hover {
+    transform: scale(1.15);
+}
+
+.session-drawing-toolbar .color-btn-mini.active {
+    transform: scale(1.25);
+    border-color: white;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.session-drawing-toolbar .pen-slider-mini {
+    width: 70px;
+    height: 4px;
+    accent-color: white;
+    cursor: pointer;
+}
+
+.session-drawing-toolbar .tool-btn-mini {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    opacity: 0.9;
+    min-width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.session-drawing-toolbar .tool-btn-mini:hover {
+    background: rgba(255, 255, 255, 0.25);
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.session-drawing-toolbar .tool-btn-mini.active {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Review header adjustments for toolbar */
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.session-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
