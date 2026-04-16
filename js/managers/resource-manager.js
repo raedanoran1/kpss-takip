@@ -51,23 +51,10 @@ export function setupResourcesUI() {
             return;
         }
 
-        // PDF boyut kontrolü (iOS/iPad için kritik)
-        if (pdfFile) {
-            const sizeMB = pdfFile.size / (1024 * 1024);
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-            const limitMB = isIOS ? 50 : 200;
-
-            if (sizeMB > limitMB) {
-                const device = isIOS ? 'iPad/iPhone' : 'bu cihaz';
-                showToast(
-                    `PDF çok büyük (${sizeMB.toFixed(0)} MB). ${device} için maksimum ${limitMB} MB. PDF'i sıkıştırın veya bölerek yükleyin.`,
-                    'error'
-                );
-                return;
-            }
-            if (sizeMB > 20) {
-                showToast(`Büyük PDF (${sizeMB.toFixed(0)} MB) yükleniyor, lütfen bekleyin...`, 'warning');
-            }
+        // PDF boyut bilgisi (sadece büyük dosyalarda bilgi ver, bloklamaz)
+        if (pdfFile && pdfFile.size > 50 * 1024 * 1024) {
+            const sizeMB = (pdfFile.size / (1024 * 1024)).toFixed(0);
+            showToast(`Büyük PDF (${sizeMB} MB) yükleniyor, lütfen bekleyin...`, 'warning');
         }
 
         const newId = addResource(appState.currentSubject, name, type, note, status);
@@ -309,19 +296,10 @@ function openUpdateModal(resource) {
         const pdfFile = document.getElementById('update-res-pdf-input').files[0];
 
         if (name) {
-            // PDF boyut kontrolü
-            if (pdfFile) {
-                const sizeMB = pdfFile.size / (1024 * 1024);
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-                const limitMB = isIOS ? 50 : 200;
-                if (sizeMB > limitMB) {
-                    const device = isIOS ? 'iPad/iPhone' : 'bu cihaz';
-                    showToast(
-                        `PDF çok büyük (${sizeMB.toFixed(0)} MB). ${device} için maksimum ${limitMB} MB.`,
-                        'error'
-                    );
-                    return;
-                }
+            // PDF boyut bilgisi (bloklamaz)
+            if (pdfFile && pdfFile.size > 50 * 1024 * 1024) {
+                const sizeMB = (pdfFile.size / (1024 * 1024)).toFixed(0);
+                showToast(`Büyük PDF (${sizeMB} MB) yükleniyor, lütfen bekleyin...`, 'warning');
             }
 
             updateResource(resource.id, name, type, note, status);
