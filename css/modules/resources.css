@@ -1,0 +1,154 @@
+/* --- RESOURCE (KAYNAKLAR) STYLES --- */
+.resource-item {
+    display: flex;
+    align-items: flex-start;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.resource-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+.resource-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.res-top-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.resource-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.resource-type {
+    font-size: 0.7rem;
+    color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.resource-note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background: var(--bg-color);
+    padding: 0.5rem;
+    border-radius: 6px;
+    margin-top: 0.25rem;
+    border-left: 3px solid var(--secondary-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.resource-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.resource-item .drag-handle {
+    cursor: grab;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    margin-top: 2px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 4px 6px;
+    flex-shrink: 0;
+}
+
+.resource-item .drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Finished Resource Style */
+.resource-item.finished {
+    opacity: 0.6;
+    background: var(--bg-color);
+}
+
+.resource-item.finished .resource-name {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-left: auto;
+}
+
+.status-badge.finished {
+    background: #10b981;
+    color: white;
+}
+
+/* PDF Enhancements */
+.clickable-card {
+    cursor: pointer;
+}
+
+.clickable-card:hover .resource-name {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.pdf-indicator {
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    font-weight: 600;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.action-btn.open-book-btn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+    transition: all 0.2s;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+}
+
+.action-btn.open-book-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(99, 102, 241, 0.4);
+}
+
+.status-badge.in-progress {
+    background: #6366f1;
+    color: white;
+}
