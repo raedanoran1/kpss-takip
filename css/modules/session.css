@@ -1,0 +1,345 @@
+#study-session-interface {
+    position: fixed;
+    top: calc(var(--daily-focus-panel-height, 110px) + 84px);
+    left: 0;
+    width: 100%;
+    height: calc(100% - (var(--daily-focus-panel-height, 110px) + 84px));
+    background: var(--bg-color);
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* session-header moved to session-header.css */
+
+.session-header .back-btn {
+    color: white;
+}
+
+.session-header .timer-display {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 1.5rem;
+}
+
+.session-subject-badge {
+    font-size: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.session-info {
+    flex: 1;
+}
+
+.session-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.session-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    background: var(--bg-color);
+}
+
+/* Timer Control */
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.timer-btn {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface-color);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-btn.active {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    color: white;
+    border: none;
+}
+
+.timer-btn.stopped {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+}
+
+.timer-btn.stop {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+}
+
+.timer-btn:active {
+    transform: scale(0.95);
+}
+
+/* Inline Question Tracker */
+.session-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.q-input-group {
+    display: flex;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 32px;
+}
+
+.q-input-group input {
+    width: 60px;
+    border: none;
+    background: transparent;
+    padding: 0 0.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.q-input-group button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0 0.75rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.q-total-badge {
+    background: var(--surface-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* === VOICE MESSAGING === */
+.recording-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--surface-color);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 1rem;
+    z-index: 10;
+    border-radius: 8px;
+}
+
+.recording-pulse {
+    width: 12px;
+    height: 12px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+.recording-overlay.paused .recording-pulse {
+    animation-play-state: paused;
+    background: #94a3b8;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#recording-time {
+    font-weight: 700;
+    color: #ef4444;
+    font-family: monospace;
+    flex: 1;
+}
+
+.recording-overlay.paused #recording-time {
+    color: #64748b;
+}
+
+.pause-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    padding: 0.4rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.pause-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.recording-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.recording-actions button {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.recording-actions .cancel-btn {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.recording-actions .stop-btn {
+    background: #22c55e;
+    color: white;
+}
+
+/* Audio Note Player */
+.audio-note-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(var(--primary-rgb), 0.1);
+    padding: 0.75rem;
+    border-radius: 12px;
+    min-width: 200px;
+}
+
+[data-theme="dark"] .audio-note-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.audio-play-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.audio-play-btn:hover {
+    transform: scale(1.1);
+}
+
+.audio-progress-container {
+    flex: 1;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .audio-progress-container {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.audio-progress-bar {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.audio-speed-btn {
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    min-width: 42px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .audio-speed-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.audio-time {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+}
