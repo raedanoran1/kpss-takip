@@ -3747,46 +3747,24 @@ function showCopyCard(pngBlob, pngDataUrl) {
     btn.addEventListener('click', () => {
         btn.style.opacity = '0.7';
 
-        // Karar: mobilde (share destekleniyorsa) ÖNCE Web Share kullan
-        const canShare = navigator.share &&
-                         navigator.canShare &&
-                         (() => {
-                             try {
-                                 return navigator.canShare({
-                                     files: [new File([pngBlob], 'g.png', { type: 'image/png' })]
-                                 });
-                             } catch { return false; }
-                         })();
-
-        if (canShare) {
-            // Web Share: share sheet açar → "Kopyala" / "Görseli Kopyala" seçeneği
-            const file = new File([pngBlob], 'gorsel.png', { type: 'image/png' });
-            navigator.share({ files: [file], title: 'PDF Görseli' })
-                .then(() => dismiss())
-                .catch((err) => {
-                    if (err.name === 'AbortError') {
-                        dismiss(); // kullanıcı share menüsünü kapattı — sessiz kapat
-                    } else {
-                        logger.warn('[PDF] Share failed:', err.name);
-                        showImageFallback();
-                    }
-                });
-            return;
-        }
-
-        // Web Share yoksa → Clipboard API (desktop Chrome/Firefox/Edge)
+        // Önce Clipboard API dene (iOS 16.4+, Chrome, Firefox, Edge)
+        // Web Share ÖNCE denenmez — iOS share sheet "Kopyala" tıklandığında
+        // görsel yerine title metnini panoya kopyalar.
         if (navigator.clipboard && navigator.clipboard.write && typeof ClipboardItem !== 'undefined') {
-            // SENKRON başlat — .then() ile sonucu async al (gesture korunur)
             navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })])
-                .then(() => dismiss())
+                .then(() => {
+                    dismiss();
+                    showToast('Görsel panoya kopyalandı ✅');
+                })
                 .catch((err) => {
                     logger.warn('[PDF] Clipboard failed:', err.name, err.message);
+                    // Clipboard başarısız → görsel tam ekran göster, uzun basarak kopyalansın
                     showImageFallback();
                 });
             return;
         }
 
-        // Hiçbir API yoksa görsel fallback
+        // Clipboard API yoksa görsel tam ekran fallback
         showImageFallback();
     });
 
@@ -3864,7 +3842,7 @@ async function captureScreenshot() {
             try {
                 const file = new File([blob], 'gorsel.png', { type: 'image/png' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'PDF Görseli' });
+                    await navigator.share({ files: [file] });
                     showToast('Görsel paylaşım menüsü açıldı');
                     copied = true;
                 }
