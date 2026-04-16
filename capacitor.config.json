@@ -1,0 +1,9 @@
+{
+  "appId": "com.kpss.takip",
+  "appName": "KPSS Takip",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "automatic"
+  }
+}
