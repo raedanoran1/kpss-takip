@@ -2272,6 +2272,8 @@ function setupCanvasDrawing(canvas, pageNum) {
     // ESKİ PROJE GİBİ: pointerdown kullan (daha hızlı)
     canvas.addEventListener('pointerdown', (e) => {
         if (screenshotMode) return; // Disable drawing in screenshot mode
+        // Palm rejection: sadece kalem (Apple Pencil) ve mouse ile çizim yap, parmak/avuç ile değil
+        if (e.pointerType === 'touch') return;
 
         const container = document.getElementById('pdf-pages-container');
 
@@ -2332,6 +2334,8 @@ function setupCanvasDrawing(canvas, pageNum) {
     // Draw using coalesced events for smoother lines
     canvas.addEventListener('pointermove', (e) => {
         if (screenshotMode || activeCanvas !== canvas) return;
+        // Palm rejection: sadece kalem ve mouse ile çizim
+        if (e.pointerType === 'touch') return;
 
         const container = document.getElementById('pdf-pages-container');
         if (isPanning && currentTool === 'hand' && container) {
@@ -2440,11 +2444,13 @@ function setupCanvasDrawing(canvas, pageNum) {
     // --- Touch Support for stylus/touchscreen (Global çizim paleti gibi) ---
     canvas.addEventListener('touchstart', (e) => {
         if (screenshotMode) return;
+        const touch = e.touches[0];
+        // Palm rejection: sadece Apple Pencil (stylus) ile çizim yap, parmak/avuç ile değil
+        if (!touch || touch.touchType !== 'stylus') return;
         const container = document.getElementById('pdf-pages-container');
         if (currentTool === 'hand' && container) {
             isPanning = true;
             activeCanvas = canvas;
-            const touch = e.touches[0];
             panStartY = touch.clientY;
             panStartScrollTop = container.scrollTop;
             return;
@@ -2452,7 +2458,6 @@ function setupCanvasDrawing(canvas, pageNum) {
         isDrawing = true;
         activeCanvas = canvas;
         const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
         lastX = touch.clientX - rect.left;
         lastY = touch.clientY - rect.top;
         // No path start needed for segment drawing
@@ -2461,18 +2466,17 @@ function setupCanvasDrawing(canvas, pageNum) {
 
     canvas.addEventListener('touchmove', (e) => {
         if (screenshotMode || activeCanvas !== canvas) return;
+        const touch = e.touches[0];
+        // Palm rejection: sadece Apple Pencil (stylus) ile çizim yap
+        if (!touch || touch.touchType !== 'stylus') return;
         const container = document.getElementById('pdf-pages-container');
         if (isPanning && currentTool === 'hand' && container) {
-            const touch = e.touches[0];
             const deltaY = touch.clientY - panStartY;
             container.scrollTop = panStartScrollTop - deltaY * handScrollSpeed;
             return;
         }
         if (!isDrawing) return;
         const rect = canvas.getBoundingClientRect();
-
-        // Handle multiple touches if needed, but usually just one for drawing
-        const touch = e.touches[0];
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
 
@@ -2652,8 +2656,11 @@ function centerOpticPanelVertically() {
 
     const bodyRect = body.getBoundingClientRect();
     const panelHeight = OPTIC_HEIGHT;
+    const panelWidth = 268;
     const top = Math.max(0, (bodyRect.height - panelHeight) / 2);
+    const left = Math.max(0, bodyRect.width - panelWidth - 60);
     panel.style.top = `${top}px`;
+    panel.style.left = `${left}px`;
 }
 
 function setupOpticHandleDrag(panel) {
@@ -2662,14 +2669,19 @@ function setupOpticHandleDrag(panel) {
     if (!handle || !body) return;
 
     let dragging = false;
+    let startX = 0;
     let startY = 0;
+    let startLeft = 0;
     let startTop = 0;
 
     const onPointerDown = (e) => {
         dragging = true;
+        startX = e.clientX;
         startY = e.clientY;
         const panelRect = panel.getBoundingClientRect();
-        startTop = panelRect.top - body.getBoundingClientRect().top;
+        const bodyRect = body.getBoundingClientRect();
+        startLeft = panelRect.left - bodyRect.left;
+        startTop = panelRect.top - bodyRect.top;
         document.addEventListener('pointermove', onPointerMove);
         document.addEventListener('pointerup', onPointerUp);
         e.preventDefault();
@@ -2677,14 +2689,26 @@ function setupOpticHandleDrag(panel) {
 
     const onPointerMove = (e) => {
         if (!dragging) return;
+        const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
         const bodyRect = body.getBoundingClientRect();
+        const panelWidth = panel.offsetWidth;
+        const panelHeight = panel.offsetHeight;
+
+        let newLeft = startLeft + deltaX;
         let newTop = startTop + deltaY;
-        // Sadece dikey eksende ve sınırlar içinde
+
+        const minLeft = 0;
+        const maxLeft = Math.max(0, bodyRect.width - panelWidth);
         const minTop = 0;
-        const maxTop = Math.max(0, bodyRect.height - OPTIC_HEIGHT);
+        const maxTop = Math.max(0, bodyRect.height - panelHeight);
+
+        if (newLeft < minLeft) newLeft = minLeft;
+        if (newLeft > maxLeft) newLeft = maxLeft;
         if (newTop < minTop) newTop = minTop;
         if (newTop > maxTop) newTop = maxTop;
+
+        panel.style.left = `${newLeft}px`;
         panel.style.top = `${newTop}px`;
     };
 
