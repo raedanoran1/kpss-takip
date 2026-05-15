@@ -626,6 +626,8 @@ function setupCanvasEvents() {
         if (!drawingEnabled) return;
         const touch = e.touches[0];
         if (!touch) return;
+        // Palm rejection: sadece Apple Pencil (stylus) ile çizim yap, parmak/avuç ile değil
+        if (touch.touchType !== 'stylus') return;
 
         const underlyingEl = getUnderlyingElement(touch.clientX, touch.clientY);
         if (isInteractiveElement(underlyingEl)) {
@@ -678,6 +680,9 @@ function setupCanvasEvents() {
 
     canvas.addEventListener('touchmove', (e) => {
         if (!drawingEnabled) return;
+        // Palm rejection: sadece Apple Pencil (stylus) ile çizim yap
+        const firstTouch = e.touches[0];
+        if (!firstTouch || firstTouch.touchType !== 'stylus') return;
         
         // El aracı kaydırma - rAF throttle yok (scroll için anındalık önemli)
         if (isPanning && currentTool === 'hand') {
