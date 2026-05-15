@@ -905,8 +905,6 @@
 /* === OPTİK FORM PANELİ === */
 .pdf-optic-panel {
     position: absolute;
-    /* Sağ toolbara yapışık olacak şekilde hizala */
-    right: 60px;
     width: 268px;
     background: #2d2d2d;
     border-radius: 10px;
@@ -932,13 +930,14 @@
 
 .pdf-optic-handle {
     width: 20px;
-    cursor: ns-resize;
+    cursor: move;
     color: #9ca3af;
     display: flex;
     align-items: center;
     justify-content: center;
     user-select: none;
     font-size: 0.9rem;
+    touch-action: none;
 }
 
 .pdf-optic-tabs {
