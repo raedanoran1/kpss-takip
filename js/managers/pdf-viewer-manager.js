@@ -2186,6 +2186,12 @@ async function renderPage(pageNum) {
         drawingCanvas.width = viewport.width;
         drawingCanvas.height = viewport.height;
 
+        // iOS Live Text / "Kopyala-Çeviri" menüsünü engelle
+        const blockCtxMenu = (e) => { e.preventDefault(); e.stopPropagation(); };
+        renderCanvas.addEventListener('contextmenu', blockCtxMenu, { passive: false });
+        drawingCanvas.addEventListener('contextmenu', blockCtxMenu, { passive: false });
+        container.addEventListener('contextmenu', blockCtxMenu, { passive: false });
+
         container.appendChild(renderCanvas);
         container.appendChild(drawingCanvas);
 
