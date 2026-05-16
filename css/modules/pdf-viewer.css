@@ -175,15 +175,15 @@
 .pdf-vertical-toolbar {
     position: absolute;
     z-index: 200;
-    width: 60px;
+    width: 50px;
     background: #2d2d2d;
     border: 1px solid #3e3e3e;
-    border-radius: 12px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.5rem 0.4rem 0.75rem;
-    gap: 0.6rem;
+    padding: 0.3rem 0.25rem 0.5rem;
+    gap: 0.35rem;
     box-shadow: 0 4px 24px rgba(0,0,0,0.55);
     touch-action: none;
     user-select: none;
@@ -461,13 +461,13 @@
 
 
 .pdf-vertical-toolbar .tool-btn {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     background: rgba(255, 255, 255, 0.1);
     border: none;
     cursor: pointer;
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -536,8 +536,8 @@
 }
 
 .pdf-vertical-toolbar .color-dot {
-    width: 32px;
-    height: 32px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
@@ -2217,6 +2217,19 @@
     background: #3b82f6;
     color: #fff;
     border-color: #3b82f6;
+}
+
+/* === PDF SAYFASI — iOS Kopyala/Çeviri menüsünü engelle === */
+#pdf-viewer-overlay,
+#pdf-pages-container,
+#pdf-pages-wrapper,
+.pdf-page-wrapper,
+.pdf-page,
+.pdf-page canvas,
+.pdf-text-layer {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
 }
 
 /* === SEKME ARAMA INPUTU === */
