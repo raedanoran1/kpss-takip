@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kpss-takip-v5';
+const CACHE_NAME = 'kpss-takip-v6';
 
 const STATIC_ASSETS = [
     '/',
