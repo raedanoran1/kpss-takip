@@ -5,7 +5,7 @@ import { logger } from '../utils/logger.js';
 
 let pdfDoc = null;
 let currentResourceId = null;
-let currentScale = 1.25; // Varsayılan yakınlaştırma %125
+let currentScale = 1.85; // Varsayılan yakınlaştırma %185
 let renderedPages = [];
 let currentPageNum = 1;
 let renderTimeout = null;
@@ -192,7 +192,7 @@ function _el(id) {
 // Her PDF için ayrı zoom seviyesi sakla
 async function loadZoomSetting(resourceId) {
     if (!resourceId) {
-        currentScale = 1.25; // Varsayılan %125
+        currentScale = 1.85; // Varsayılan %185
         return;
     }
     
@@ -204,11 +204,11 @@ async function loadZoomSetting(resourceId) {
             // Güvenli aralıkta tut
             currentScale = Math.min(5.0, Math.max(0.5, val));
         } else {
-            currentScale = 1.25; // Varsayılan %125
+            currentScale = 1.85; // Yeni PDF için varsayılan %185
         }
     } catch (err) {
         logger.warn('loadZoomSetting failed, using default zoom:', err);
-        currentScale = 1.25; // Varsayılan %125
+        currentScale = 1.85; // Varsayılan %185
     }
 }
 
@@ -3033,8 +3033,9 @@ function setupZoomListener() {
     if (!container) return;
 
     container.addEventListener('wheel', (e) => {
-            if (e.ctrlKey) {
+        if (e.ctrlKey) {
             e.preventDefault();
+            const savedPage = currentPageNum;
             if (e.deltaY < 0) {
                 currentScale = Math.min(currentScale + 0.1, 5.0);
             } else {
@@ -3042,34 +3043,21 @@ function setupZoomListener() {
             }
             updateZoomDisplay();
             showToast(`Zoom: ${Math.round(currentScale * 100)}%`, 'info');
+            saveZoomSetting(currentResourceId);
+            recordUserActivity();
 
-                // Yakınlaştırmayı kalıcı hale getir (her PDF için ayrı)
-                saveZoomSetting(currentResourceId);
-                
-                // Kullanıcı aktivitesini kaydet (zoom yapıldı)
-                recordUserActivity();
-
-            // KRİTİK: Yakınlaştırma sonrası sayfa pozisyonunu koru
+            // Yakınlaştırma sonrası sayfa pozisyonunu koru
             if (renderTimeout) clearTimeout(renderTimeout);
             renderTimeout = setTimeout(async () => {
-                const savedPage = currentPageNum;
-                const container = document.getElementById('pdf-pages-container');
-                const scrollTopBefore = container ? container.scrollTop : 0;
-                
-                // Tüm sayfaları yeniden render et
-                await renderAllPages();
-                
-                // Sayfa pozisyonunu koru - scroll pozisyonunu hesapla
-                // Scale değiştiği için scroll pozisyonunu da scale'e göre ayarla
-                if (container) {
-                    // Önce hedef sayfaya scroll yap
-                    await scrollToPage(savedPage, true);
-                    // Sonra scroll pozisyonunu scale değişikliğine göre ayarla
-                    // Scale artarsa scroll da artmalı, azalırsa azalmalı
-                    const scaleRatio = currentScale / (savedPage ? 1 : 1); // Önceki scale'i bilmiyoruz, bu yüzden direkt scroll yapıyoruz
-                    setTimeout(() => {
-                        scrollToPage(savedPage, true);
-                    }, 200);
+                try {
+                    await renderAllPages();
+                    const cont = document.getElementById('pdf-pages-container');
+                    if (cont) {
+                        await scrollToPage(savedPage, true);
+                        setTimeout(() => scrollToPage(savedPage, true), 200);
+                    }
+                } catch (err) {
+                    logger.warn('[zoom wheel] render error:', err);
                 }
             }, 100);
         }
@@ -4224,7 +4212,10 @@ export function setupPDFDrawingListeners() {
     }
 
     if (zoomInput) {
-        const applyMainZoom = () => {
+        let zoomApplyPending = false;
+        const applyMainZoom = (e) => {
+            if (e && e.stopPropagation) e.stopPropagation();
+            if (zoomApplyPending) return;
             let val = parseInt(zoomInput.value);
             if (isNaN(val)) return;
             if (val < 50) val = 50;
@@ -4232,35 +4223,33 @@ export function setupPDFDrawingListeners() {
             zoomInput.value = val;
             currentScale = val / 100;
             updateZoomDisplay();
-
-            // Yakınlaştırmayı kalıcı hale getir (her PDF için ayrı)
             saveZoomSetting(currentResourceId);
 
-            // KRİTİK: Yakınlaştırma sonrası sayfa pozisyonunu koru
             const savedPage = currentPageNum;
             if (renderTimeout) clearTimeout(renderTimeout);
+            zoomApplyPending = true;
             renderTimeout = setTimeout(async () => {
-                const container = document.getElementById('pdf-pages-container');
-                
-                // Tüm sayfaları yeniden render et
-                await renderAllPages();
-                
-                // Sayfa pozisyonunu koru
-                if (container) {
-                    // Önce hedef sayfaya scroll yap
-                    await scrollToPage(savedPage, true);
-                    // Scroll listener'ı ignore et (manuel sayfa değişikliği gibi)
-                    setTimeout(() => {
-                        scrollToPage(savedPage, true);
-                    }, 200);
+                try {
+                    const container = document.getElementById('pdf-pages-container');
+                    await renderAllPages();
+                    if (container) {
+                        await scrollToPage(savedPage, true);
+                        setTimeout(() => scrollToPage(savedPage, true), 200);
+                    }
+                } catch (err) {
+                    logger.warn('[applyMainZoom] render error:', err);
+                } finally {
+                    zoomApplyPending = false;
                 }
-            }, 100);
+            }, 150);
         };
         zoomInput.addEventListener('change', applyMainZoom);
         zoomInput.addEventListener('blur', applyMainZoom);
         zoomInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); zoomInput.blur(); }
+            if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); zoomInput.blur(); }
         });
+        zoomInput.addEventListener('click', (e) => e.stopPropagation());
+        zoomInput.addEventListener('pointerdown', (e) => e.stopPropagation());
     }
 
     // Close button
