@@ -2219,14 +2219,13 @@
     border-color: #3b82f6;
 }
 
-/* === PDF SAYFASI — iOS Kopyala/Çeviri menüsünü engelle === */
+/* === PDF SAYFASI — iOS Kopyala/Çeviri/Live Text menüsünü engelle === */
 #pdf-viewer-overlay,
 #pdf-pages-container,
 #pdf-pages-wrapper,
-.pdf-page-wrapper,
-.pdf-page,
-.pdf-page canvas,
-.pdf-text-layer {
+.pdf-page-container,
+.pdf-render-canvas,
+.pdf-drawing-layer {
     -webkit-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
