@@ -2144,6 +2144,99 @@
         transparent 80%
     );
 }
+/* === TOOLBAR KAPAT / ZOOM / HİZALAMA === */
+.toolbar-close-btn {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.15);
+    border-radius: 6px;
+    width: 36px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+.toolbar-close-btn:hover {
+    background: rgba(239, 68, 68, 0.35);
+}
+.toolbar-zoom-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    width: 36px;
+}
+.toolbar-zoom-input {
+    width: 34px;
+    padding: 2px 2px;
+    border-radius: 4px;
+    border: 1px solid #4b5563;
+    background: #1f2937;
+    color: #e5e7eb;
+    font-size: 0.7rem;
+    text-align: center;
+    -moz-appearance: textfield;
+    touch-action: manipulation;
+}
+.toolbar-zoom-input::-webkit-inner-spin-button,
+.toolbar-zoom-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.toolbar-zoom-pct {
+    font-size: 0.6rem;
+    color: #9ca3af;
+    line-height: 1;
+}
+.toolbar-align-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 36px;
+}
+.toolbar-align-wrap .pdf-align-btn {
+    width: 28px;
+    height: 22px;
+    font-size: 0.65rem;
+    padding: 0;
+    border-radius: 4px;
+    border: 1px solid #374151;
+    background: #374151;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.toolbar-align-wrap .pdf-align-btn.active,
+.toolbar-align-wrap .pdf-align-btn:hover {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+/* === SEKME ARAMA INPUTU === */
+.tab-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #374151);
+    background: var(--bg-secondary, #1f2937);
+    color: var(--text-primary, #e5e7eb);
+    font-size: 0.82rem;
+    margin-bottom: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.tab-search-input:focus {
+    border-color: #3b82f6;
+}
+
 /* === HEADER TOGGLE BUTTON === */
 .pdf-header-toggle-btn {
     background: rgba(255, 255, 255, 0.1);
