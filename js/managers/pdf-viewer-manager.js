@@ -3032,6 +3032,10 @@ function setupZoomListener() {
     const container = document.getElementById('pdf-pages-container');
     if (!container) return;
 
+    // iOS / iPad — "Kopyala / Çevir" context menüsünü engelle
+    container.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); }, { passive: false });
+    container.addEventListener('selectstart', (e) => { e.preventDefault(); }, { passive: false });
+
     container.addEventListener('wheel', (e) => {
         if (e.ctrlKey) {
             e.preventDefault();
