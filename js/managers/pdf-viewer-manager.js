@@ -1999,12 +1999,16 @@ export async function openPDFViewer(resourceId, resourceName, initialPage = 1) {
         currentPageNum = safeInitialPage;
 
         document.getElementById('page-count').textContent = pdfDoc.numPages;
+        const tbTotal = document.getElementById('toolbar-page-total');
+        if (tbTotal) tbTotal.textContent = pdfDoc.numPages;
         // Set initial page indicator - don't let scroll listener override it immediately
         const indicator = document.getElementById('current-page-indicator');
         if (indicator) {
             indicator.textContent = safeInitialPage;
             indicator.dataset.initialPage = safeInitialPage;
         }
+        const tbCurrent = document.getElementById('toolbar-current-page');
+        if (tbCurrent) tbCurrent.textContent = safeInitialPage;
 
         // Render all pages
         await renderAllPages();
@@ -2966,6 +2970,8 @@ function setupScrollListener() {
             const indicator = document.getElementById('current-page-indicator');
                 currentPageNum = mostVisiblePage;
                 if (indicator) indicator.textContent = currentPageNum;
+                const tbC = document.getElementById('toolbar-current-page');
+                if (tbC) tbC.textContent = currentPageNum;
                 // PERFORMANS: DB yazma işlemini scroll sırasında yapma - sadece cache'e yaz
                 // DB yazma işlemi çok yavaş, scroll'u blokluyor
                 // Sadece cache'e yaz, DB'ye kapatırken yazılacak
