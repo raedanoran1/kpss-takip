@@ -246,3 +246,180 @@
         transform: translateY(-20px);
     }
 }
+/* DUFS Browser */
+.dufs-pick-btn {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    background: transparent;
+    border: 1.5px dashed var(--primary-color);
+    border-radius: var(--radius-md);
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s;
+}
+.dufs-pick-btn:active { background: var(--primary-color); color: white; }
+
+.dufs-modal {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+.dufs-url-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.dufs-url-row .modern-input {
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 0.55rem 0.65rem;
+}
+.dufs-connect-btn {
+    padding: 0.55rem 0.9rem !important;
+    font-size: 0.85rem !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.dufs-search {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+}
+.dufs-file-list {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    min-height: 180px;
+    max-height: 340px;
+    background: var(--bg-color);
+}
+.dufs-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 100px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+.dufs-file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+}
+.dufs-file-item:last-child { border-bottom: none; }
+.dufs-file-item:hover { background: var(--surface-color); }
+.dufs-file-item.selected {
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    border-left: 3px solid var(--primary-color);
+}
+.dufs-file-icon { font-size: 1.1rem; flex-shrink: 0; }
+.dufs-file-info { flex: 1; min-width: 0; }
+.dufs-file-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dufs-file-size { font-size: 0.75rem; color: var(--text-secondary); }
+.dufs-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+.dufs-fetch-progress {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 0.35rem 0.75rem;
+    background: var(--surface-color);
+    border-radius: var(--radius-md);
+    margin-top: 0.4rem;
+}
+
+/* DUFS Setup Guide */
+.dufs-setup-guide {
+    padding: 1rem;
+    font-size: 0.85rem;
+}
+.dufs-setup-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+}
+.dufs-setup-desc {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+.dufs-setup-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+.dufs-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+}
+.dufs-step-num {
+    min-width: 22px;
+    height: 22px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.dufs-code {
+    display: inline-block;
+    margin-top: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    word-break: break-all;
+}
+
+/* DUFS Solution Tabs */
+.dufs-solution-tab {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+}
+.dufs-solution-header {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    margin-bottom: 0.6rem;
+}
