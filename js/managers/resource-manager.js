@@ -106,8 +106,13 @@ export function setupResourcesUI() {
     if (pdfInput && pdfLabel) {
         pdfInput.addEventListener('change', () => {
             if (pdfInput.files.length > 0) {
-                pdfLabel.textContent = `Seçilen Dosya: ${pdfInput.files[0].name}`;
+                const fileName = pdfInput.files[0].name;
+                pdfLabel.textContent = `Seçilen Dosya: ${fileName}`;
                 pdfLabel.style.color = 'var(--primary-color)';
+                const nameInput = document.getElementById('resource-name-input');
+                if (nameInput && !nameInput.value.trim()) {
+                    nameInput.value = fileName.replace(/\.[^/.]+$/, '');
+                }
             } else {
                 pdfLabel.textContent = 'PDF Dosyası Seç (Opsiyonel)';
                 pdfLabel.style.color = 'var(--text-secondary)';
