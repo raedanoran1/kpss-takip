@@ -49,9 +49,11 @@ async function fetchDufsFile(dufsBase, filename, onProgress) {
     const FILE_TIMEOUT = 10 * 60 * 1000; // 10 dakika (büyük dosyalar için)
     let resp;
     try {
-        resp = await dufsProxyFetch(dufsBase, remotePath, FILE_TIMEOUT);
-    } catch (_) {
+        // Önce doğrudan dene (ngrok HTTPS URL ise Vercel proxy'e gerek yok, timeout yok)
         resp = await dufsDirectFetch(dufsBase, remotePath, FILE_TIMEOUT);
+    } catch (_) {
+        // Doğrudan başarısız olursa proxy üzerinden dene
+        resp = await dufsProxyFetch(dufsBase, remotePath, FILE_TIMEOUT);
     }
 
     const contentLength = parseInt(resp.headers.get('Content-Length') || '0');
