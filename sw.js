@@ -1,97 +1,58 @@
-const CACHE_NAME = 'kpss-takip-v8';
+const CACHE_NAME = 'kpss-takip-v9';
 
-// Büyük, nadiren değişen dosyalar — bunlar cache-first
-const CACHE_FIRST_PATTERNS = [
-    /\/lib\/sql-wasm\.wasm/,
-    /\/lib\/pdf\.worker\.min\.js/,
-    /\/lib\/pdf\.min\.js/,
-    /\/lib\/sql-wasm\.js/,
-    /\/fonts\//,
-    /\/icons\//,
-    /\/images\//,
-];
+const SKIP_PATHS = ['/dufs-proxy', '/install-cert'];
 
-// Önceden cache'lenecek kritik offline dosyalar
-const PRECACHE_ASSETS = [
-    '/index.html',
-    '/css/styles.css',
-    '/lib/sql-wasm.wasm',
-    '/lib/pdf.min.js',
-    '/lib/pdf.worker.min.js',
-    '/lib/sql-wasm.js',
-    '/fonts/Inter-Variable.woff2',
-    '/icons/icon48.png',
-    '/icons/icon128.png',
-    '/images/eraser.png',
-    '/images/kalem.png',
-    '/images/optik.png',
-    '/web_resources/data/cevsen_supply.json',
-];
-
-self.addEventListener('install', (event) => {
+// Install: sadece index.html'i önceden al — geri kalanı ilk ziyarette cache'lenir
+self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(PRECACHE_ASSETS).catch((err) => {
-                console.warn('[SW] Bazı dosyalar önbelleğe alınamadı:', err);
-            }))
+            .then(cache => cache.add('/'))
+            .catch(() => {})
             .then(() => self.skipWaiting())
     );
 });
 
-self.addEventListener('activate', (event) => {
+// Activate: eski cache'leri temizle, hemen devral
+self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys()
-            .then((keys) => Promise.all(
+            .then(keys => Promise.all(
                 keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
             ))
             .then(() => self.clients.claim())
     );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
 
-    const url = new URL(event.request.url);
+    let url;
+    try { url = new URL(event.request.url); } catch { return; }
+
+    // Farklı origin veya API endpoint'leri: SW'yi atla
     if (url.origin !== location.origin) return;
+    if (SKIP_PATHS.some(p => url.pathname.startsWith(p))) return;
 
-    // Cache-first: büyük/nadiren değişen dosyalar
-    const isCacheFirst = CACHE_FIRST_PATTERNS.some(p => p.test(url.pathname));
-
-    if (isCacheFirst) {
-        event.respondWith(
-            caches.match(event.request).then((cached) => {
-                if (cached) return cached;
-                return fetch(event.request).then((response) => {
+    event.respondWith(
+        caches.open(CACHE_NAME).then(cache =>
+            // Önce ağdan dene, başarılıysa cache'e kaydet
+            fetch(event.request)
+                .then(response => {
                     if (response && response.status === 200) {
-                        const clone = response.clone();
-                        caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
+                        cache.put(event.request, response.clone());
                     }
                     return response;
-                });
-            })
-        );
-        return;
-    }
-
-    // Network-first: HTML, JS, CSS, JSON — her zaman güncel versiyon
-    event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                if (response && response.status === 200) {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
-                }
-                return response;
-            })
-            .catch(() => {
-                // Ağ yoksa cache'ten sun
-                return caches.match(event.request).then((cached) => {
-                    if (cached) return cached;
-                    // HTML isteğiyse ana sayfayı dön (offline fallback)
-                    if (event.request.headers.get('accept')?.includes('text/html')) {
-                        return caches.match('/index.html');
-                    }
-                });
-            })
+                })
+                .catch(() =>
+                    // Ağ yoksa cache'ten sun
+                    cache.match(event.request).then(cached => {
+                        if (cached) return cached;
+                        // Navigation isteğiyse index.html'i dön
+                        if (event.request.mode === 'navigate') {
+                            return cache.match('/') || cache.match('/index.html');
+                        }
+                    })
+                )
+        )
     );
 });
