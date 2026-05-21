@@ -9,10 +9,23 @@ const PORT = process.env.PORT || 8080;
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
     res.setHeader('Permissions-Policy', 'clipboard-read=*, clipboard-write=*');
+
+    // SW dosyasının kendisi: her zaman güncellenmeli
+    if (req.path === '/sw.js') {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Service-Worker-Allowed', '/');
+        return next();
+    }
+
+    // API endpoint'leri: hiç cache'lenmesin
+    if (req.path.startsWith('/dufs-proxy') || req.path.startsWith('/install-cert')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return next();
+    }
+
+    // Statik dosyalar (HTML, JS, CSS, wasm, font): SW'nin cache'leyebilmesi için izin ver
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     next();
 });
 
