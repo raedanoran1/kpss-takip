@@ -1209,7 +1209,7 @@
     <script src="lib/pdf.min.js"></script>
     <script type="module" src="js/sidepanel.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && location.protocol === 'https:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(() => {});
             });
