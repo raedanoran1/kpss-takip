@@ -152,3 +152,109 @@
     background: #6366f1;
     color: white;
 }
+
+/* === DUFS PICKER === */
+.dufs-pick-btn {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.dufs-pick-btn:active { opacity: 0.8; }
+
+.dufs-modal {
+    max-width: 520px;
+    width: 94vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow: hidden;
+}
+.dufs-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dufs-modal-header h3 { margin: 0; }
+.dufs-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
+}
+.dufs-url-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+.dufs-url-field { flex: 1; font-size: 0.8rem; }
+.dufs-refresh-btn { flex-shrink: 0; }
+.dufs-search { width: 100%; box-sizing: border-box; }
+.dufs-file-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    min-height: 200px;
+}
+.dufs-file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.dufs-file-item:last-child { border-bottom: none; }
+.dufs-file-item:active { background: var(--surface-color); }
+.dufs-file-icon { font-size: 1.4rem; flex-shrink: 0; }
+.dufs-file-info { flex: 1; min-width: 0; }
+.dufs-file-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dufs-file-size {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+.dufs-state-msg {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+.dufs-downloading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    padding: 2rem;
+    color: #0ea5e9;
+    font-weight: 600;
+}
+@keyframes dufs-spin { to { transform: rotate(360deg); } }
+.dufs-spinner {
+    width: 20px; height: 20px;
+    border: 3px solid #bae6fd;
+    border-top-color: #0ea5e9;
+    border-radius: 50%;
+    animation: dufs-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
