@@ -44,18 +44,27 @@ function renderDufsList(files, listEl) {
     });
 }
 
+function dufsProxyUrl(targetUrl) {
+    return `/dufs-proxy?url=${encodeURIComponent(targetUrl)}`;
+}
+
 async function fetchDufsFiles(baseUrl, listEl) {
     listEl.innerHTML = '<div class="dufs-state-msg">⏳ Yükleniyor...</div>';
     try {
-        const res = await fetch(`${baseUrl}/?json`);
+        const res = await fetch(dufsProxyUrl(`${baseUrl}/?json`));
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        if (data.error) throw new Error(data.error);
         dufsAllFiles = (data.paths || [])
             .filter(p => p.path_type === 'File' && p.name.toLowerCase().endsWith('.pdf'))
             .sort((a, b) => a.name.localeCompare(b.name, 'tr'));
         renderDufsList(dufsAllFiles, listEl);
     } catch (e) {
-        listEl.innerHTML = `<div class="dufs-state-msg">❌ Bağlanamadı: ${e.message}<br><small>${baseUrl}</small></div>`;
+        const isHttps = window.location.protocol === 'https:';
+        const hint = isHttps
+            ? '<br><small>💡 Bu özellik yalnızca yerel sunucu üzerinden (http://) çalışır.</small>'
+            : '';
+        listEl.innerHTML = `<div class="dufs-state-msg">❌ Bağlanamadı: ${e.message}${hint}</div>`;
     }
 }
 
@@ -64,7 +73,7 @@ async function selectDufsFile(fileInfo, listEl) {
     const fileUrl = `${baseUrl}/${encodeURIComponent(fileInfo.name)}`;
     listEl.innerHTML = `<div class="dufs-downloading"><div class="dufs-spinner"></div> İndiriliyor: ${fileInfo.name}</div>`;
     try {
-        const res = await fetch(fileUrl);
+        const res = await fetch(dufsProxyUrl(fileUrl));
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const blob = await res.blob();
         dufsSelectedFile = new File([blob], fileInfo.name, { type: 'application/pdf' });
