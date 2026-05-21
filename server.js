@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const https = require('https');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -17,6 +18,14 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'));
+});
+
+// Sertifikayı iPad'e yüklemek için indirme endpoint'i
+app.get('/install-cert', (req, res) => {
+    const certPath = path.resolve(__dirname, 'certs', 'cert.pem');
+    res.setHeader('Content-Type', 'application/x-x509-ca-cert');
+    res.setHeader('Content-Disposition', 'attachment; filename="kpss-cert.pem"');
+    res.sendFile(certPath);
 });
 
 app.get('/dufs-proxy', (req, res) => {
@@ -46,7 +55,22 @@ app.use(express.static(path.resolve(__dirname), {
     }
 }));
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`KPSS Takip sunucusu: http://0.0.0.0:${PORT}`);
-    console.log(`Dizin: ${__dirname}`);
-});
+const certPath = path.resolve(__dirname, 'certs', 'cert.pem');
+const keyPath  = path.resolve(__dirname, 'certs', 'key.pem');
+
+if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+    const sslOptions = {
+        cert: fs.readFileSync(certPath),
+        key:  fs.readFileSync(keyPath),
+    };
+    https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {
+        console.log(`KPSS Takip sunucusu (HTTPS): https://0.0.0.0:${PORT}`);
+        console.log(`iPad'den eriş: https://192.168.1.36:${PORT}`);
+        console.log(`Sertifika yükle: https://192.168.1.36:${PORT}/install-cert`);
+    });
+} else {
+    http.createServer(app).listen(PORT, '0.0.0.0', () => {
+        console.log(`KPSS Takip sunucusu (HTTP): http://0.0.0.0:${PORT}`);
+        console.log('Uyari: certs/cert.pem bulunamadi, HTTP modunda calisiyor.');
+    });
+}
