@@ -153,6 +153,89 @@
     color: white;
 }
 
+/* === DUFS INLINE QUICK ADD === */
+.dufs-quick-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: nowrap;
+}
+.dufs-quick-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+.dufs-quick-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+.dufs-quick-type-select {
+    flex-shrink: 0;
+    width: 130px;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.5rem;
+}
+.dufs-quick-btn {
+    flex-shrink: 0;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+.dufs-quick-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+.dufs-quick-dropdown {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0; right: 0;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    max-height: 260px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 9999;
+    box-shadow: var(--shadow-md);
+}
+.dufs-quick-dropdown.hidden { display: none; }
+.dufs-dd-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    gap: 0.5rem;
+}
+.dufs-dd-item:last-child { border-bottom: none; }
+.dufs-dd-item:active, .dufs-dd-item:hover { background: var(--bg-color); }
+.dufs-dd-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dufs-dd-size {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+.dufs-update-wrap {
+    position: relative;
+}
+.dufs-update-selected {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: #10b981;
+    font-weight: 600;
+}
+.dufs-update-selected.hidden { display: none; }
+
 /* === DUFS PICKER === */
 .dufs-pick-btn {
     margin-top: 0.5rem;
