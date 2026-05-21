@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kpss-takip-v7';
+const CACHE_NAME = 'kpss-takip-v8';
 
 // Büyük, nadiren değişen dosyalar — bunlar cache-first
 const CACHE_FIRST_PATTERNS = [
