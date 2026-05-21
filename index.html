@@ -465,7 +465,21 @@
             <div id="resources-tab" class="tab-content">
                 <div class="list-header">
                     <h3>Kaynak Listesi</h3>
-                    <button class="small-btn" id="add-resource-btn">+ Ekle</button>
+                    <button class="small-btn" id="add-resource-btn">+ Manuel</button>
+                </div>
+                <div class="dufs-quick-row">
+                    <div class="dufs-quick-wrap">
+                        <input type="text" id="dufs-quick-search" class="modern-input dufs-quick-input" placeholder="☁️ PDF ara ve ekle...">
+                        <div id="dufs-quick-dropdown" class="dufs-quick-dropdown hidden"></div>
+                    </div>
+                    <select id="dufs-quick-type" class="modern-input dufs-quick-type-select">
+                        <option value="Konu Anlatımı">Konu Anlatımı</option>
+                        <option value="Soru Bankası">Soru Bankası</option>
+                        <option value="Branş Deneme">Branş Deneme</option>
+                        <option value="Genel Deneme">Genel Deneme</option>
+                        <option value="Video Ders">Video Ders</option>
+                    </select>
+                    <button id="dufs-quick-add-btn" class="primary-btn dufs-quick-btn" disabled>Ekle</button>
                 </div>
                 <input type="search" id="resource-search" class="tab-search-input" placeholder="🔍 Kaynak ara...">
                 <div id="resource-list" class="resource-list">
@@ -814,28 +828,11 @@
                         📄 PDF Dosyası Seç
                     </label>
                 </div>
-                <button type="button" id="dufs-pick-btn" class="dufs-pick-btn">☁️ DUFS'dan Seç</button>
             </div>
             <div class="modal-footer">
                 <button class="ghost-btn" id="cancel-add-resource">İptal</button>
                 <button class="primary-btn" id="save-new-resource">Kaydet</button>
             </div>
-        </div>
-    </div>
-
-    <!-- === DUFS PDF PICKER MODAL === -->
-    <div class="modal-overlay" id="dufs-picker-modal">
-        <div class="modal dufs-modal">
-            <div class="dufs-modal-header">
-                <h3>☁️ PDF Seç</h3>
-                <button id="dufs-picker-close" class="dufs-close-btn">✕</button>
-            </div>
-            <div class="dufs-url-row">
-                <input type="text" id="dufs-url-input" class="modern-input dufs-url-field" placeholder="http://192.168.1.36:5000">
-                <button id="dufs-refresh-btn" class="ghost-btn dufs-refresh-btn">↻</button>
-            </div>
-            <input type="text" id="dufs-search-input" class="modern-input dufs-search" placeholder="🔍 PDF ara...">
-            <div id="dufs-file-list" class="dufs-file-list"></div>
         </div>
     </div>
 
