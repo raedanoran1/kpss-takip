@@ -7,6 +7,130 @@ import { loadQuestionsDashboard } from './questions-manager.js';
 import { loadTopics } from './topic-manager.js';
 import { setupPointerDragSort } from '../utils/drag-sort.js';
 
+const DUFS_URL_KEY = 'dufs_base_url';
+const DUFS_DEFAULT = 'http://192.168.1.36:5000';
+
+let dufsSelectedFile = null;
+let dufsAllFiles = [];
+
+function getDufsUrl() {
+    return localStorage.getItem(DUFS_URL_KEY) || DUFS_DEFAULT;
+}
+
+function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderDufsList(files, listEl) {
+    if (!files.length) {
+        listEl.innerHTML = '<div class="dufs-state-msg">PDF bulunamadı.</div>';
+        return;
+    }
+    listEl.innerHTML = '';
+    files.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'dufs-file-item';
+        item.innerHTML = `
+            <div class="dufs-file-icon">📄</div>
+            <div class="dufs-file-info">
+                <div class="dufs-file-name">${f.name}</div>
+                <div class="dufs-file-size">${formatBytes(f.size)}</div>
+            </div>
+        `;
+        item.addEventListener('click', () => selectDufsFile(f, listEl));
+        listEl.appendChild(item);
+    });
+}
+
+async function fetchDufsFiles(baseUrl, listEl) {
+    listEl.innerHTML = '<div class="dufs-state-msg">⏳ Yükleniyor...</div>';
+    try {
+        const res = await fetch(`${baseUrl}/?json`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        dufsAllFiles = (data.paths || [])
+            .filter(p => p.path_type === 'File' && p.name.toLowerCase().endsWith('.pdf'))
+            .sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+        renderDufsList(dufsAllFiles, listEl);
+    } catch (e) {
+        listEl.innerHTML = `<div class="dufs-state-msg">❌ Bağlanamadı: ${e.message}<br><small>${baseUrl}</small></div>`;
+    }
+}
+
+async function selectDufsFile(fileInfo, listEl) {
+    const baseUrl = getDufsUrl();
+    const fileUrl = `${baseUrl}/${encodeURIComponent(fileInfo.name)}`;
+    listEl.innerHTML = `<div class="dufs-downloading"><div class="dufs-spinner"></div> İndiriliyor: ${fileInfo.name}</div>`;
+    try {
+        const res = await fetch(fileUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        dufsSelectedFile = new File([blob], fileInfo.name, { type: 'application/pdf' });
+
+        const pdfLabel = document.getElementById('resource-pdf-label');
+        if (pdfLabel) {
+            pdfLabel.textContent = `Seçilen Dosya: ${fileInfo.name}`;
+            pdfLabel.style.color = 'var(--primary-color)';
+        }
+        const nameInput = document.getElementById('resource-name-input');
+        if (nameInput && !nameInput.value.trim()) {
+            nameInput.value = fileInfo.name.replace(/\.[^/.]+$/, '');
+        }
+
+        document.getElementById('dufs-picker-modal').classList.remove('active');
+        showToast(`"${fileInfo.name}" seçildi`);
+    } catch (e) {
+        listEl.innerHTML = `<div class="dufs-state-msg">❌ İndirme hatası: ${e.message}</div>`;
+    }
+}
+
+function setupDufsPicker() {
+    const pickerModal = document.getElementById('dufs-picker-modal');
+    const openBtn = document.getElementById('dufs-pick-btn');
+    const closeBtn = document.getElementById('dufs-picker-close');
+    const urlInput = document.getElementById('dufs-url-input');
+    const refreshBtn = document.getElementById('dufs-refresh-btn');
+    const searchInput = document.getElementById('dufs-search-input');
+    const listEl = document.getElementById('dufs-file-list');
+
+    if (!pickerModal || !openBtn) return;
+
+    urlInput.value = getDufsUrl();
+
+    openBtn.addEventListener('click', () => {
+        dufsAllFiles = [];
+        searchInput.value = '';
+        urlInput.value = getDufsUrl();
+        pickerModal.classList.add('active');
+        fetchDufsFiles(getDufsUrl(), listEl);
+    });
+
+    closeBtn.addEventListener('click', () => pickerModal.classList.remove('active'));
+    pickerModal.addEventListener('click', e => {
+        if (e.target === pickerModal) pickerModal.classList.remove('active');
+    });
+
+    refreshBtn.addEventListener('click', () => {
+        const url = urlInput.value.trim().replace(/\/$/, '');
+        localStorage.setItem(DUFS_URL_KEY, url);
+        searchInput.value = '';
+        fetchDufsFiles(url, listEl);
+    });
+
+    urlInput.addEventListener('change', () => {
+        const url = urlInput.value.trim().replace(/\/$/, '');
+        localStorage.setItem(DUFS_URL_KEY, url);
+    });
+
+    searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        const filtered = q ? dufsAllFiles.filter(f => f.name.toLowerCase().includes(q)) : dufsAllFiles;
+        renderDufsList(filtered, listEl);
+    });
+}
+
 export function setupResourcesUI() {
     // Add Modal Elements
     const addBtn = document.getElementById('add-resource-btn');
@@ -27,10 +151,18 @@ export function setupResourcesUI() {
         document.getElementById('resource-note-input').value = '';
         document.getElementById('resource-type-select').value = 'Konu Anlatımı';
         document.getElementById('resource-status-select').value = '0';
+        const pdfLbl = document.getElementById('resource-pdf-label');
+        if (pdfLbl) { pdfLbl.textContent = '📄 PDF Dosyası Seç'; pdfLbl.style.color = ''; }
+        const pdfInp = document.getElementById('resource-pdf-input');
+        if (pdfInp) pdfInp.value = '';
+        dufsSelectedFile = null;
         modal.classList.add('active');
     });
 
-    cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+    cancelBtn.addEventListener('click', () => {
+        dufsSelectedFile = null;
+        modal.classList.remove('active');
+    });
 
     saveBtn.addEventListener('click', async () => {
         const nameInput = document.getElementById('resource-name-input');
@@ -44,7 +176,7 @@ export function setupResourcesUI() {
         const type = typeSelect.value;
         const note = noteInput.value.trim();
         const status = parseInt(statusSelect.value);
-        const pdfFile = pdfInput.files[0];
+        const pdfFile = dufsSelectedFile || pdfInput.files[0];
 
         if (!name) {
             showToast('Lütfen kaynak adı girin', 'warning');
@@ -62,6 +194,7 @@ export function setupResourcesUI() {
                 pdfInput.value = '';
                 pdfLabel.textContent = 'PDF Dosyası Seç (Opsiyonel)';
                 pdfLabel.style.color = 'var(--text-secondary)';
+                dufsSelectedFile = null;
 
                 modal.classList.remove('active');
                 if (success) {
@@ -85,6 +218,7 @@ export function setupResourcesUI() {
                 pdfInput.value = '';
                 pdfLabel.textContent = 'PDF Dosyası Seç (Opsiyonel)';
                 pdfLabel.style.color = 'var(--text-secondary)';
+                dufsSelectedFile = null;
                 modal.classList.remove('active');
                 showToast('PDF okunamadı: Dosya erişim hatası', 'error');
                 loadResources();
@@ -109,6 +243,7 @@ export function setupResourcesUI() {
                 const fileName = pdfInput.files[0].name;
                 pdfLabel.textContent = `Seçilen Dosya: ${fileName}`;
                 pdfLabel.style.color = 'var(--primary-color)';
+                dufsSelectedFile = null;
                 const nameInput = document.getElementById('resource-name-input');
                 if (nameInput && !nameInput.value.trim()) {
                     nameInput.value = fileName.replace(/\.[^/.]+$/, '');
@@ -119,6 +254,8 @@ export function setupResourcesUI() {
             }
         });
     }
+
+    setupDufsPicker();
 
     // Reordering – pointer-based (iOS safe, prevents text selection)
     const listEl = document.getElementById('resource-list');
